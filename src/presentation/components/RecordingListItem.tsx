@@ -14,11 +14,26 @@ export function RecordingListItem({ session, onPress }: RecordingListItemProps) 
   const renderUploadStatus = () => {
     switch (session.uploadStatus) {
       case 'uploaded':
-        return <CheckCircle size={16} color="#10B981" />;
+        return (
+          <View className="flex-row items-center bg-green-100 px-2 py-1 rounded-full">
+            <CheckCircle size={12} color="#10B981" />
+            <Text className="text-[10px] font-bold text-green-700 ml-1">UPLOADED</Text>
+          </View>
+        );
       case 'uploading':
-        return <UploadCloud size={16} color="#3B82F6" />;
+        return (
+          <View className="flex-row items-center bg-blue-100 px-2 py-1 rounded-full">
+            <UploadCloud size={12} color="#3B82F6" />
+            <Text className="text-[10px] font-bold text-blue-700 ml-1">UPLOADING</Text>
+          </View>
+        );
       case 'failed':
-        return <AlertCircle size={16} color="#EF4444" />;
+        return (
+          <View className="flex-row items-center bg-red-100 px-2 py-1 rounded-full">
+            <AlertCircle size={12} color="#EF4444" />
+            <Text className="text-[10px] font-bold text-red-700 ml-1">FAILED</Text>
+          </View>
+        );
       default:
         return null;
     }

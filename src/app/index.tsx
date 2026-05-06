@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, SafeAreaView, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Mic, ListMusic, ShieldAlert, History, UploadCloud, Activity } from 'lucide-react-native';
+import { Mic, ListMusic } from 'lucide-react-native';
 import { BrandLogo } from '../presentation/components/BrandLogo';
 
 export default function HomeScreen() {
@@ -46,27 +46,7 @@ export default function HomeScreen() {
             <ListMusic color="#3e1f75" size={28} />
           </View>
         </TouchableOpacity>
-
-        <Text className="text-lg font-semibold text-text mb-4 px-2">Key Features</Text>
-        <View className="flex-row flex-wrap justify-between">
-          <FeatureCard icon={ShieldAlert} title="Smart Auto-Pause" desc="Interrupt-aware" />
-          <FeatureCard icon={Activity} title="Timeline" desc="Track pauses" />
-          <FeatureCard icon={History} title="Local History" desc="Securely saved" />
-          <FeatureCard icon={UploadCloud} title="Mock Upload" desc="Cloud-ready" />
-        </View>
       </ScrollView>
     </SafeAreaView>
-  );
-}
-
-function FeatureCard({ icon: Icon, title, desc }: any) {
-  return (
-    <View className="bg-white w-[48%] rounded-2xl p-4 mb-4 shadow-sm border border-gray-50">
-      <View className="bg-primary/10 w-10 h-10 rounded-full items-center justify-center mb-3">
-        <Icon color="#3e1f75" size={20} />
-      </View>
-      <Text className="font-semibold text-text text-sm mb-1">{title}</Text>
-      <Text className="text-xs text-textSecondary">{desc}</Text>
-    </View>
   );
 }

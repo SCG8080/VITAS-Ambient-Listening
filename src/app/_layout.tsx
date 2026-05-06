@@ -1,12 +1,14 @@
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
 import { useAppInterruption } from '../application/services/AppInterruptionService';
+import { useCallDetection } from '../application/services/useCallDetection';
 import { recordingSessionService } from '../application/services/RecordingSessionService';
 import '../global.css';
 
 export default function RootLayout() {
   // Initialize interruption handling at the root level
   useAppInterruption();
+  useCallDetection();
 
   useEffect(() => {
     // Load saved recordings on startup

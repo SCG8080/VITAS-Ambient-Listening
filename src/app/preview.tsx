@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, SafeAreaView, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { Play, Home, UploadCloud } from 'lucide-react-native';
-import { Audio } from 'expo-av';
+import { Audio, AVPlaybackStatus } from 'expo-av';
+import Slider from '@react-native-community/slider';
 import { VitasHeader } from '../presentation/components/VitasHeader';
 import { UploadMockModal } from '../presentation/components/UploadMockModal';
 import { TimelineSegmentCard } from '../presentation/components/TimelineSegmentCard';
@@ -16,6 +17,8 @@ export default function PreviewScreen() {
   const currentSession = useRecordingStore((state) => state.currentSession);
   const [isPlaying, setIsPlaying] = useState(false);
   const [sound, setSound] = useState<Audio.Sound | null>(null);
+  const [playbackPosition, setPlaybackPosition] = useState(0);
+  const [playbackDuration, setPlaybackDuration] = useState(1);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
 
   if (!currentSession) {
@@ -28,6 +31,27 @@ export default function PreviewScreen() {
       </SafeAreaView>
     );
   }
+
+  useEffect(() => {
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
+  }, [sound]);
+
+  const onPlaybackStatusUpdate = (status: AVPlaybackStatus) => {
+    if (!status.isLoaded) return;
+    
+    setPlaybackPosition(status.positionMillis);
+    setPlaybackDuration(status.durationMillis || 1);
+    
+    if (status.didJustFinish) {
+      setIsPlaying(false);
+      sound?.setPositionAsync(0);
+      setPlaybackPosition(0);
+    }
+  };
 
   const handlePlayPreview = async () => {
     if (!currentSession.audioUri) {
@@ -50,16 +74,18 @@ export default function PreviewScreen() {
           { shouldPlay: true }
         );
         setSound(newSound);
-        newSound.setOnPlaybackStatusUpdate((status) => {
-          if (status.isLoaded && status.didJustFinish) {
-            setIsPlaying(false);
-            newSound.setPositionAsync(0);
-          }
-        });
+        newSound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
       }
       setIsPlaying(true);
     } catch (error) {
       Alert.alert("Playback Error", "Failed to play the recording.");
+    }
+  };
+
+  const handleSeek = async (value: number) => {
+    if (sound) {
+      await sound.setPositionAsync(value);
+      setPlaybackPosition(value);
     }
   };
 
@@ -88,13 +114,29 @@ export default function PreviewScreen() {
             </View>
           </View>
 
-          <TouchableOpacity 
-            onPress={handlePlayPreview}
-            className="bg-gray-100 rounded-2xl p-4 flex-row justify-center items-center"
-          >
-            <Play color="#3e1f75" fill={isPlaying ? "#3e1f75" : "transparent"} size={20} className="mr-2" />
-            <Text className="font-semibold text-primary">{isPlaying ? "Pause Preview" : "Play Preview"}</Text>
-          </TouchableOpacity>
+          <View className="bg-gray-50 rounded-2xl p-4 flex-col justify-center">
+            <View className="flex-row items-center mb-2">
+              <TouchableOpacity onPress={handlePlayPreview} className="bg-primary/10 p-3 rounded-full mr-3">
+                <Play color="#3e1f75" fill={isPlaying ? "#3e1f75" : "transparent"} size={20} />
+              </TouchableOpacity>
+              <View className="flex-1">
+                <Slider
+                  style={{ width: '100%', height: 40 }}
+                  minimumValue={0}
+                  maximumValue={playbackDuration}
+                  value={playbackPosition}
+                  onSlidingComplete={handleSeek}
+                  minimumTrackTintColor="#3e1f75"
+                  maximumTrackTintColor="#D1D5DB"
+                  thumbTintColor="#3e1f75"
+                />
+              </View>
+            </View>
+            <View className="flex-row justify-between px-2">
+              <Text className="text-xs text-textSecondary font-medium">{formatDurationMs(playbackPosition)}</Text>
+              <Text className="text-xs text-textSecondary font-medium">{formatDurationMs(playbackDuration)}</Text>
+            </View>
+          </View>
         </View>
 
         <TouchableOpacity 
