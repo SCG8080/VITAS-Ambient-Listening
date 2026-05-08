@@ -1,47 +1,67 @@
 import React, { useEffect } from 'react';
 import { View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withRepeat, withTiming, withSequence, Easing } from 'react-native-reanimated';
+import Animated, {
+  useSharedValue, useAnimatedStyle,
+  withRepeat, withSequence, withTiming, Easing,
+} from 'react-native-reanimated';
+import { GlassCard } from './GlassCard';
 
-export function RecordingWaveform({ isRecording }: { isRecording: boolean }) {
-  const bars = Array.from({ length: 5 });
-
-  return (
-    <View className="flex-row items-center justify-center h-32 space-x-2">
-      {bars.map((_, i) => (
-        <AnimatedBar key={i} index={i} isRecording={isRecording} />
-      ))}
-    </View>
-  );
-}
+const BAR_COUNT = 16;
+const BASE_HEIGHTS = [8, 18, 30, 12, 38, 22, 10, 42, 16, 34, 8, 28, 14, 40, 20, 9];
 
 function AnimatedBar({ index, isRecording }: { index: number; isRecording: boolean }) {
-  const height = useSharedValue(20);
+  const height = useSharedValue(BASE_HEIGHTS[index] * 0.25);
 
   useEffect(() => {
     if (isRecording) {
+      const target = BASE_HEIGHTS[index];
       height.value = withRepeat(
         withSequence(
-          withTiming(40 + Math.random() * 40, { duration: 300 + index * 100, easing: Easing.inOut(Easing.ease) }),
-          withTiming(20 + Math.random() * 20, { duration: 300 + index * 100, easing: Easing.inOut(Easing.ease) })
+          withTiming(target, { duration: 280 + index * 60, easing: Easing.inOut(Easing.ease) }),
+          withTiming(target * 0.3, { duration: 280 + index * 60, easing: Easing.inOut(Easing.ease) }),
         ),
         -1,
-        true
+        true,
       );
     } else {
-      height.value = withTiming(8, { duration: 300 });
+      height.value = withTiming(BASE_HEIGHTS[index] * 0.2, { duration: 400 });
     }
   }, [isRecording]);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      height: height.value,
-    };
-  });
+  const style = useAnimatedStyle(() => ({ height: height.value }));
 
   return (
-    <Animated.View 
-      className={`w-3 rounded-full ${isRecording ? 'bg-primary' : 'bg-gray-300'}`}
-      style={animatedStyle}
+    <Animated.View
+      style={[
+        {
+          width: 2.5,
+          borderRadius: 3,
+          backgroundColor: '#A78BFA',
+          opacity: isRecording ? 0.85 : 0.35,
+        },
+        style,
+      ]}
     />
+  );
+}
+
+export function RecordingWaveform({ isRecording }: { isRecording: boolean }) {
+  return (
+    <GlassCard paddingHorizontal={14} paddingVertical={0} padding={0}>
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 2.5,
+          height: 54,
+          paddingHorizontal: 14,
+        }}
+      >
+        {Array.from({ length: BAR_COUNT }).map((_, i) => (
+          <AnimatedBar key={i} index={i} isRecording={isRecording} />
+        ))}
+      </View>
+    </GlassCard>
   );
 }

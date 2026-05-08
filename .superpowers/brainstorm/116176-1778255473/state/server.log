@@ -1,0 +1,7 @@
+{"type":"server-started","port":50850,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:50850","screen_dir":"/home/sandy/src/expo/VITAS Ambient Recorder/vitas-ambient-recorder/.superpowers/brainstorm/116176-1778255473/content","state_dir":"/home/sandy/src/expo/VITAS Ambient Recorder/vitas-ambient-recorder/.superpowers/brainstorm/116176-1778255473/state"}
+{"type":"screen-added","file":"/home/sandy/src/expo/VITAS Ambient Recorder/vitas-ambient-recorder/.superpowers/brainstorm/116176-1778255473/content/design-direction.html"}
+{"type":"screen-added","file":"/home/sandy/src/expo/VITAS Ambient Recorder/vitas-ambient-recorder/.superpowers/brainstorm/116176-1778255473/content/hybrid-design.html"}
+{"type":"screen-added","file":"/home/sandy/src/expo/VITAS Ambient Recorder/vitas-ambient-recorder/.superpowers/brainstorm/116176-1778255473/content/modern-glass.html"}
+{"type":"screen-added","file":"/home/sandy/src/expo/VITAS Ambient Recorder/vitas-ambient-recorder/.superpowers/brainstorm/116176-1778255473/content/design-v3-perfect.html"}
+{"type":"screen-added","file":"/home/sandy/src/expo/VITAS Ambient Recorder/vitas-ambient-recorder/.superpowers/brainstorm/116176-1778255473/content/design-v4-clean.html"}
+{"type":"server-stopped","reason":"idle timeout"}

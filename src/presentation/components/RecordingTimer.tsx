@@ -1,13 +1,25 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Text } from 'react-native';
 import { formatDurationMs } from '../../utils/duration';
+import { C, FS } from '../theme';
 
 export function RecordingTimer({ durationMs }: { durationMs: number }) {
   return (
-    <View className="items-center justify-center my-6">
-      <Text className="text-6xl font-light text-text tabular-nums tracking-tight">
-        {formatDurationMs(durationMs)}
-      </Text>
-    </View>
+    <Text
+      style={{
+        fontSize: FS.hero,
+        fontWeight: '200',
+        letterSpacing: -3,
+        lineHeight: 52,
+        color: C.textPrimary,
+        textAlign: 'center',
+        fontVariant: ['tabular-nums'],
+        textShadowColor: 'rgba(167,139,250,0.22)',
+        textShadowOffset: { width: 0, height: 0 },
+        textShadowRadius: 40,
+      }}
+    >
+      {formatDurationMs(durationMs)}
+    </Text>
   );
 }

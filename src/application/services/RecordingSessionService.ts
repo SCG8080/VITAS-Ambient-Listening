@@ -170,16 +170,23 @@ class RecordingSessionService {
   async mockUpload(id: string) {
     const session = await this.repository.getRecordingById(id);
     if (!session) return;
-    
+
     session.uploadStatus = "uploading";
     await this.repository.saveRecording(session);
+    const state = useRecordingStore.getState();
+    if (state.currentSession?.id === id) {
+      state.updateCurrentSession({ uploadStatus: "uploading" });
+    }
     await this.initialize();
-    
-    // Simulate delay
+
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
+
     session.uploadStatus = "uploaded";
     await this.repository.saveRecording(session);
+    const state2 = useRecordingStore.getState();
+    if (state2.currentSession?.id === id) {
+      state2.updateCurrentSession({ uploadStatus: "uploaded" });
+    }
     await this.initialize();
   }
 

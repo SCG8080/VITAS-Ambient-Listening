@@ -10,12 +10,12 @@
       "typedRoutes": true
     },
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash-vitas.png",
       "resizeMode": "contain",
-      "backgroundColor": "#3e1f75"
+      "backgroundColor": "#0D0621"
     },
     "ios": {
       "supportsTablet": true

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITAS UI — Hybrid Design</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+    background: #f0eefc;
+    min-height: 100vh;
+    padding: 32px 24px 48px;
+    color: #1e1b4b;
+  }
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 800;
+    color: #3e1f75;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #6B7280;
+    font-size: 14px;
+    margin-bottom: 32px;
+  }
+
+  /* ===== SCREEN GRID ===== */
+  .screen-grid {
+    display: flex;
+    gap: 32px;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+  .screen-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .screen-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4c1d95;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* ===== PHONE FRAME ===== */
+  .phone {
+    width: 220px;
+    height: 460px;
+    border-radius: 36px;
+    border: 7px solid #1a1028;
+    overflow: hidden;
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.1),
+      0 30px 80px rgba(62,31,117,0.3),
+      0 10px 30px rgba(0,0,0,0.2);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .notch {
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 72px; height: 22px;
+    background: #1a1028;
+    border-radius: 0 0 16px 16px;
+    z-index: 20;
+  }
+  .screen {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    background: #F5F3FF;
+    overflow: hidden;
+  }
+
+  /* ===== SHARED TOKENS ===== */
+  :root {
+    --purple-deep: #3e1f75;
+    --purple-mid: #5b21b6;
+    --purple-bright: #7c3aed;
+    --purple-light: #ede9fe;
+    --purple-pale: #f5f3ff;
+    --text-main: #1e1b4b;
+    --text-sub: #6B7280;
+    --card-bg: #ffffff;
+    --bg: #F5F3FF;
+  }
+
+  /* ===== HEADER ===== */
+  .hdr {
+    background: linear-gradient(160deg, #5b21b6 0%, #3e1f75 60%, #2d1654 100%);
+    padding: 30px 16px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(62,31,117,0.4);
+  }
+  .hdr-logo { color: white; font-size: 16px; font-weight: 900; letter-spacing: 2px; }
+  .hdr-sub { color: rgba(255,255,255,0.55); font-size: 7.5px; letter-spacing: 3px; text-transform: uppercase; margin-top: 1px; }
+  .hdr-icon { width: 30px; height: 30px; border-radius: 8px; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; }
+
+  /* ===== BODY ===== */
+  .body { flex: 1; padding: 14px 12px 10px; display: flex; flex-direction: column; gap: 10px; overflow: hidden; }
+
+  /* ===== GRADIENT CARDS ===== */
+  .g-card {
+    border-radius: 16px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.8) inset,
+      0 2px 4px rgba(62,31,117,0.06),
+      0 8px 24px rgba(62,31,117,0.10),
+      0 1px 2px rgba(0,0,0,0.04);
+  }
+  .g-card.primary {
+    background: linear-gradient(135deg, #6d28d9 0%, #3e1f75 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.15) inset,
+      0 4px 12px rgba(62,31,117,0.3),
+      0 12px 32px rgba(62,31,117,0.25);
+  }
+  .g-card.light {
+    background: linear-gradient(145deg, #ffffff 0%, #f3f0ff 100%);
+    border: 1px solid rgba(139,92,246,0.1);
+  }
+  .g-card.tint {
+    background: linear-gradient(145deg, #faf7ff 0%, #ede9fe 100%);
+    border: 1px solid rgba(139,92,246,0.15);
+  }
+
+  .icon-circle {
+    width: 40px; height: 40px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .icon-circle.white { background: rgba(255,255,255,0.2); }
+  .icon-circle.purple { background: linear-gradient(135deg, #7c3aed, #5b21b6); box-shadow: 0 4px 10px rgba(124,58,237,0.35); }
+  .icon-circle.light { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
+
+  .card-title-white { font-size: 12px; font-weight: 700; color: white; }
+  .card-sub-white { font-size: 9px; color: rgba(255,255,255,0.65); margin-top: 2px; }
+  .card-title-dark { font-size: 12px; font-weight: 700; color: #1e1b4b; }
+  .card-sub-dark { font-size: 9px; color: var(--text-sub); margin-top: 2px; }
+
+  .chevron { margin-left: auto; opacity: 0.5; }
+
+  /* ===== STAT ROW ===== */
+  .stat-row { display: flex; gap: 8px; }
+  .stat-pill {
+    flex: 1;
+    background: linear-gradient(145deg, #ffffff, #f0ebff);
+    border-radius: 12px;
+    padding: 10px 10px;
+    border: 1px solid rgba(139,92,246,0.1);
+    box-shadow: 0 2px 8px rgba(62,31,117,0.07), 0 1px 0 rgba(255,255,255,0.9) inset;
+  }
+  .stat-val { font-size: 15px; font-weight: 800; color: #3e1f75; }
+  .stat-lbl { font-size: 8px; color: var(--text-sub); margin-top: 1px; }
+
+  /* ===== RECORDER SCREEN ===== */
+  .rec-badge {
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px;
+    background: linear-gradient(135deg, #fee2e2, #fecaca);
+    border: 1px solid rgba(239,68,68,0.2);
+    border-radius: 20px;
+    padding: 4px 12px;
+    align-self: center;
+    box-shadow: 0 2px 8px rgba(239,68,68,0.15);
+  }
+  .rec-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: #ef4444;
+    box-shadow: 0 0 6px rgba(239,68,68,0.7);
+  }
+  .rec-badge-text { font-size: 9px; font-weight: 700; color: #dc2626; letter-spacing: 0.5px; }
+
+  .timer-text {
+    text-align: center;
+    font-size: 44px; font-weight: 200;
+    color: #1e1b4b;
+    letter-spacing: -2px;
+    line-height: 1;
+  }
+
+  .waveform {
+    display: flex; align-items: center; justify-content: center; gap: 3px;
+    height: 50px;
+    background: linear-gradient(145deg, #ffffff, #f3f0ff);
+    border-radius: 16px;
+    border: 1px solid rgba(139,92,246,0.1);
+    box-shadow: 0 2px 12px rgba(62,31,117,0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
+    padding: 0 16px;
+  }
+  .wbar {
+    border-radius: 3px;
+    background: linear-gradient(180deg, #7c3aed 0%, #4c1d95 100%);
+    opacity: 0.85;
+  }
+
+  /* Control buttons */
+  .controls { display: flex; align-items: center; justify-content: center; gap: 16px; }
+  .ctrl-btn {
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .ctrl-btn.pause {
+    width: 46px; height: 46px;
+    background: linear-gradient(145deg, #ffffff, #f3f0ff);
+    border: 1px solid rgba(139,92,246,0.15);
+    box-shadow: 0 4px 12px rgba(62,31,117,0.12), 0 1px 0 rgba(255,255,255,1) inset;
+  }
+  .ctrl-btn.rec-main {
+    width: 60px; height: 60px;
+    background: linear-gradient(145deg, #7c3aed, #3e1f75);
+    box-shadow: 0 0 0 6px rgba(124,58,237,0.12), 0 6px 20px rgba(62,31,117,0.4);
+  }
+  .ctrl-btn.stop {
+    width: 46px; height: 46px;
+    background: linear-gradient(145deg, #fef2f2, #fee2e2);
+    border: 1px solid rgba(239,68,68,0.15);
+    box-shadow: 0 4px 12px rgba(239,68,68,0.12);
+  }
+
+  /* Timeline segment */
+  .seg-row { display: flex; flex-direction: column; gap: 6px; }
+  .seg {
+    background: linear-gradient(145deg, #ffffff, #faf7ff);
+    border-radius: 12px;
+    padding: 8px 10px;
+    display: flex; align-items: center; gap: 10px;
+    border-left: 3px solid #7c3aed;
+    box-shadow: 0 2px 8px rgba(62,31,117,0.07);
+    border-top: 1px solid rgba(139,92,246,0.08);
+    border-right: 1px solid rgba(139,92,246,0.08);
+    border-bottom: 1px solid rgba(139,92,246,0.08);
+  }
+  .seg.pause-seg { border-left-color: #f59e0b; }
+  .seg-icon { width: 26px; height: 26px; border-radius: 8px; background: linear-gradient(135deg, #ede9fe, #ddd6fe); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .seg-icon.warn { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+  .seg-title { font-size: 9.5px; font-weight: 700; color: #1e1b4b; }
+  .seg-time { font-size: 8px; color: var(--text-sub); }
+  .seg-dur { margin-left: auto; font-size: 9.5px; font-weight: 700; color: #3e1f75; }
+
+  /* ===== RECORDINGS LIST SCREEN ===== */
+  .rec-list-item {
+    background: linear-gradient(145deg, #ffffff, #faf7ff);
+    border-radius: 14px;
+    padding: 10px 12px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 2px 8px rgba(62,31,117,0.08), 0 1px 0 rgba(255,255,255,0.9) inset;
+    border: 1px solid rgba(139,92,246,0.08);
+  }
+  .rec-thumb {
+    width: 38px; height: 38px; border-radius: 11px;
+    background: linear-gradient(135deg, #7c3aed, #4c1d95);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 10px rgba(124,58,237,0.3);
+  }
+  .rec-item-title { font-size: 10px; font-weight: 700; color: #1e1b4b; }
+  .rec-item-date { font-size: 8px; color: var(--text-sub); margin-top: 1px; }
+  .rec-dur-chip {
+    margin-left: auto;
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+    border-radius: 8px;
+    padding: 3px 7px;
+    font-size: 8.5px; font-weight: 700; color: #5b21b6;
+    flex-shrink: 0;
+  }
+  .uploaded-chip {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+    border-radius: 8px;
+    padding: 2px 6px;
+    font-size: 7.5px; font-weight: 700; color: #065f46;
+    flex-shrink: 0;
+    display: flex; align-items: center; gap: 3px;
+  }
+  .section-lbl {
+    font-size: 8.5px; font-weight: 700; color: var(--text-sub);
+    letter-spacing: 1px; text-transform: uppercase;
+    padding: 0 2px;
+  }
+
+  /* Divider */
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(139,92,246,0.15), transparent); }
+
+  /* Scroll hint */
+  .more-hint { text-align: center; font-size: 8px; color: rgba(139,92,246,0.5); margin-top: 2px; }
+
+  /* ===== ANNOTATION PANELS ===== */
+  .annotation-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 32px;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .ann-card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px 20px;
+    flex: 1;
+    min-width: 200px;
+    max-width: 260px;
+    box-shadow: 0 4px 16px rgba(62,31,117,0.08);
+    border: 1px solid rgba(139,92,246,0.1);
+  }
+  .ann-title { font-size: 12px; font-weight: 800; color: #3e1f75; margin-bottom: 8px; }
+  .ann-item { font-size: 11px; color: #374151; padding: 3px 0; display: flex; gap: 6px; align-items: flex-start; }
+  .ann-item::before { content: "✦"; color: #7c3aed; font-size: 8px; margin-top: 2px; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<h1>VITAS Ambient Recorder — Hybrid Design</h1>
+<p class="subtitle">Light theme + one-screen density + gradient depth cards + layered shadows</p>
+
+<div class="screen-grid">
+
+  <!-- HOME SCREEN -->
+  <div class="screen-wrap">
+    <div class="screen-label">Home</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <!-- Header -->
+        <div class="hdr">
+          <div>
+            <div class="hdr-logo">VITAS</div>
+            <div class="hdr-sub">Ambient Recorder</div>
+          </div>
+          <div class="hdr-icon">
+            <!-- bell icon -->
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.8)" stroke-width="2.5" stroke-linecap="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          </div>
+        </div>
+        <!-- Body -->
+        <div class="body">
+          <!-- Primary CTA -->
+          <div class="g-card primary">
+            <div class="icon-circle white">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="6" fill="white" stroke="white"/></svg>
+            </div>
+            <div>
+              <div class="card-title-white">Start Recording</div>
+              <div class="card-sub-white">Capture new ambient audio</div>
+            </div>
+            <div class="chevron">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <!-- Secondary CTA -->
+          <div class="g-card light">
+            <div class="icon-circle light">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#5b21b6" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18"/><path d="M9 21V9"/></svg>
+            </div>
+            <div style="flex:1;">
+              <div class="card-title-dark">My Recordings</div>
+              <div class="card-sub-dark">Review past sessions</div>
+            </div>
+            <div class="chevron">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Stats -->
+          <div class="section-lbl">Activity Overview</div>
+          <div class="stat-row">
+            <div class="stat-pill">
+              <div class="stat-val">12</div>
+              <div class="stat-lbl">Total Sessions</div>
+            </div>
+            <div class="stat-pill">
+              <div class="stat-val">3.2h</div>
+              <div class="stat-lbl">Recorded</div>
+            </div>
+            <div class="stat-pill">
+              <div class="stat-val">8</div>
+              <div class="stat-lbl">Uploaded</div>
+            </div>
+          </div>
+
+          <!-- Recent -->
+          <div class="section-lbl">Recent</div>
+          <div class="rec-list-item">
+            <div class="rec-thumb">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="rec-item-title" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Visit — Room 204</div>
+              <div class="rec-item-date">Today, 9:42 AM</div>
+            </div>
+            <div class="uploaded-chip">
+              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+              Done
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECORDER SCREEN -->
+  <div class="screen-wrap">
+    <div class="screen-label">Recorder (Active)</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <!-- Header -->
+        <div class="hdr" style="justify-content:center;flex-direction:column;align-items:center;gap:0;">
+          <div class="hdr-logo" style="font-size:13px;">Ambient Recorder</div>
+        </div>
+        <!-- Body -->
+        <div class="body" style="gap:8px;">
+          <!-- Status badge -->
+          <div style="display:flex;justify-content:center;">
+            <div class="rec-badge">
+              <div class="rec-dot"></div>
+              <div class="rec-badge-text">RECORDING ACTIVE</div>
+            </div>
+          </div>
+
+          <!-- Timer -->
+          <div class="timer-text">12:47</div>
+
+          <!-- Waveform -->
+          <div class="waveform">
+            <div class="wbar" style="width:3px;height:10px;opacity:0.5;"></div>
+            <div class="wbar" style="width:3px;height:22px;opacity:0.7;"></div>
+            <div class="wbar" style="width:3px;height:35px;"></div>
+            <div class="wbar" style="width:3px;height:18px;opacity:0.75;"></div>
+            <div class="wbar" style="width:3px;height:28px;"></div>
+            <div class="wbar" style="width:3px;height:40px;"></div>
+            <div class="wbar" style="width:3px;height:14px;opacity:0.65;"></div>
+            <div class="wbar" style="width:3px;height:32px;"></div>
+            <div class="wbar" style="width:3px;height:20px;opacity:0.7;"></div>
+            <div class="wbar" style="width:3px;height:38px;"></div>
+            <div class="wbar" style="width:3px;height:12px;opacity:0.5;"></div>
+            <div class="wbar" style="width:3px;height:26px;"></div>
+          </div>
+
+          <!-- Controls -->
+          <div class="controls">
+            <div class="ctrl-btn pause">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#5b21b6" stroke="none"><rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/></svg>
+            </div>
+            <div class="ctrl-btn rec-main">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="white" stroke="none"><circle cx="12" cy="12" r="6"/></svg>
+            </div>
+            <div class="ctrl-btn stop">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="#ef4444" stroke="none"><rect x="5" y="5" width="14" height="14" rx="2"/></svg>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Timeline -->
+          <div class="section-lbl">Timeline Activity</div>
+          <div class="seg-row">
+            <div class="seg">
+              <div class="seg-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#5b21b6" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+              </div>
+              <div>
+                <div class="seg-title">Recorded Segment</div>
+                <div class="seg-time">9:42 AM – ongoing</div>
+              </div>
+              <div class="seg-dur">12:47</div>
+            </div>
+            <div class="seg pause-seg">
+              <div class="seg-icon warn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="10" y1="15" x2="10" y2="10"/><line x1="14" y1="15" x2="14" y2="10"/></svg>
+              </div>
+              <div>
+                <div class="seg-title">Paused Gap</div>
+                <div class="seg-time">9:38 – 9:42 AM</div>
+              </div>
+              <div class="seg-dur" style="color:#d97706;">0:22</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RECORDINGS LIST -->
+  <div class="screen-wrap">
+    <div class="screen-label">Recordings</div>
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="screen">
+        <!-- Header -->
+        <div class="hdr" style="justify-content:space-between;">
+          <div style="width:28px;height:28px;border-radius:8px;background:rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </div>
+          <div style="text-align:center;">
+            <div class="hdr-logo" style="font-size:13px;">VITAS</div>
+          </div>
+          <div style="width:28px;"></div>
+        </div>
+        <!-- Body -->
+        <div class="body" style="gap:8px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:16px;font-weight:800;color:#1e1b4b;">My Recordings</div>
+            <div style="font-size:9px;color:#7c3aed;font-weight:700;background:linear-gradient(135deg,#ede9fe,#ddd6fe);padding:3px 8px;border-radius:8px;">12 total</div>
+          </div>
+
+          <!-- Search bar -->
+          <div style="background:linear-gradient(145deg,#ffffff,#f5f3ff);border-radius:12px;padding:8px 12px;display:flex;align-items:center;gap:8px;border:1px solid rgba(139,92,246,0.12);box-shadow:0 2px 8px rgba(62,31,117,0.06);">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#9CA3AF" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            <span style="font-size:10px;color:#9CA3AF;">Search recordings…</span>
+          </div>
+
+          <div class="section-lbl">Today</div>
+          <div class="rec-list-item">
+            <div class="rec-thumb">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="rec-item-title">Visit — Room 204</div>
+              <div class="rec-item-date">9:42 AM · 3 pauses</div>
+            </div>
+            <div class="rec-dur-chip">12:47</div>
+          </div>
+
+          <div class="section-lbl" style="margin-top:2px;">Yesterday</div>
+          <div class="rec-list-item">
+            <div class="rec-thumb">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="rec-item-title">Morning Assessment</div>
+              <div class="rec-item-date">8:15 AM · 1 pause</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;">
+              <div class="rec-dur-chip">08:02</div>
+              <div class="uploaded-chip">
+                <svg width="7" height="7" viewBox="0 0 24 24" fill="none" stroke="#065f46" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                Done
+              </div>
+            </div>
+          </div>
+          <div class="rec-list-item">
+            <div class="rec-thumb">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div class="rec-item-title">End-of-Shift Notes</div>
+              <div class="rec-item-date">4:52 PM · No pauses</div>
+            </div>
+            <div class="rec-dur-chip">05:31</div>
+          </div>
+          <div class="more-hint">↓ 9 more recordings</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== DESIGN ANNOTATIONS ===== -->
+<div class="annotation-grid">
+  <div class="ann-card">
+    <div class="ann-title">Colors & Gradients</div>
+    <div class="ann-item">Soft purple-tinted background (#F5F3FF) instead of plain gray</div>
+    <div class="ann-item">Cards: white→#f3f0ff gradient with subtle border</div>
+    <div class="ann-item">Primary CTA: deep #6d28d9→#3e1f75 gradient</div>
+    <div class="ann-item">Stats: white→#f0ebff gradient pills</div>
+    <div class="ann-item">Waveform bars: #7c3aed→#4c1d95 gradient</div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-title">Depth & Shadows</div>
+    <div class="ann-item">Multi-layer shadows (near + far) on every card</div>
+    <div class="ann-item">Inset top-border highlight (1px white) for lift effect</div>
+    <div class="ann-item">Recording button: outer glow ring + deep shadow</div>
+    <div class="ann-item">Icon thumbnails: colored shadows matching their gradient</div>
+    <div class="ann-item">Header: directional gradient + shadow below</div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-title">Layout & Density</div>
+    <div class="ann-item">Everything visible on one screen — no scroll required</div>
+    <div class="ann-item">Stats row on home + recent item = full context immediately</div>
+    <div class="ann-item">Recorder: badge + timer + waveform + controls + timeline all fit</div>
+    <div class="ann-item">Left-border accent on timeline segments (color-coded)</div>
+    <div class="ann-item">Section labels in small-caps for clear hierarchy</div>
+  </div>
+  <div class="ann-card">
+    <div class="ann-title">iOS Fixes</div>
+    <div class="ann-item">useSafeAreaInsets() replaces hardcoded pt-14</div>
+    <div class="ann-item">Remove className prop from Lucide icons (unsupported in RN)</div>
+    <div class="ann-item">Proper StatusBar style (light-content on purple header)</div>
+    <div class="ann-item">space-x/y replaced with gap via StyleSheet or inline style</div>
+    <div class="ann-item">Platform.OS checks for slider thumb sizing</div>
+  </div>
+</div>
+
+<div style="text-align:center;margin-top:32px;font-size:13px;color:#6B7280;">
+  Does this hit the mark? Reply in the terminal — any elements to tweak before we write the spec.
+</div>
+
+</body>
+</html>

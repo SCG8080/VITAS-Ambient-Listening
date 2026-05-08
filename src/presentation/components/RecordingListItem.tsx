@@ -1,76 +1,77 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { FileAudio, UploadCloud, CheckCircle, AlertCircle } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Music } from 'lucide-react-native';
 import { RecordingSession } from '../../domain/entities/RecordingSession';
 import { formatDateTime } from '../../utils/dateTime';
 import { formatDurationMs } from '../../utils/duration';
+import { GlassCard } from './GlassCard';
+import { C, FS, G, R } from '../theme';
 
-interface RecordingListItemProps {
+interface Props {
   session: RecordingSession;
   onPress: () => void;
 }
 
-export function RecordingListItem({ session, onPress }: RecordingListItemProps) {
-  const renderUploadStatus = () => {
-    switch (session.uploadStatus) {
-      case 'uploaded':
-        return (
-          <View className="flex-row items-center bg-green-100 px-2 py-1 rounded-full">
-            <CheckCircle size={12} color="#10B981" />
-            <Text className="text-[10px] font-bold text-green-700 ml-1">UPLOADED</Text>
-          </View>
-        );
-      case 'uploading':
-        return (
-          <View className="flex-row items-center bg-blue-100 px-2 py-1 rounded-full">
-            <UploadCloud size={12} color="#3B82F6" />
-            <Text className="text-[10px] font-bold text-blue-700 ml-1">UPLOADING</Text>
-          </View>
-        );
-      case 'failed':
-        return (
-          <View className="flex-row items-center bg-red-100 px-2 py-1 rounded-full">
-            <AlertCircle size={12} color="#EF4444" />
-            <Text className="text-[10px] font-bold text-red-700 ml-1">FAILED</Text>
-          </View>
-        );
-      default:
-        return null;
-    }
-  };
+export function RecordingListItem({ session, onPress }: Props) {
+  const isUploaded = session.uploadStatus === 'uploaded';
+  const isUploading = session.uploadStatus === 'uploading';
 
   return (
-    <TouchableOpacity 
-      activeOpacity={0.7} 
-      onPress={onPress}
-      className="bg-white rounded-2xl p-4 mb-3 shadow-sm border border-gray-100 flex-row items-center"
-    >
-      <View className="w-12 h-12 bg-primary/10 rounded-full items-center justify-center mr-4">
-        <FileAudio color="#3e1f75" size={24} />
-      </View>
-      
-      <View className="flex-1">
-        <Text className="text-base font-semibold text-text mb-1" numberOfLines={1}>
-          {session.title}
-        </Text>
-        <Text className="text-xs text-textSecondary">
-          {formatDateTime(session.startedAt)}
-        </Text>
-        <View className="flex-row items-center mt-2 space-x-3">
-          <Text className="text-xs font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">
-            {formatDurationMs(session.durationMs)}
-          </Text>
-          {session.pauseCount > 0 && (
-            <Text className="text-xs text-textSecondary">
-              {session.pauseCount} pause{session.pauseCount !== 1 ? 's' : ''}
+    <TouchableOpacity onPress={onPress} activeOpacity={0.75}>
+      <GlassCard padding={0}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: 12 }}>
+          {/* Icon thumbnail */}
+          <LinearGradient
+            colors={G.icon}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: R.el,
+              borderCurve: 'continuous',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: '0 4px 12px rgba(124,58,237,0.45)',
+            } as any}
+          >
+            <Music size={14} color="rgba(255,255,255,0.9)" />
+          </LinearGradient>
+
+          {/* Meta */}
+          <View style={{ flex: 1, minWidth: 0 }}>
+            <Text
+              numberOfLines={1}
+              style={{ fontSize: FS.small, fontWeight: '600', color: 'rgba(255,255,255,0.88)' }}
+            >
+              {session.title}
             </Text>
-          )}
+            <Text style={{ fontSize: 9, fontWeight: '500', color: C.textSecondary, marginTop: 2, letterSpacing: 0.2 }}>
+              {formatDateTime(session.startedAt)}
+              {session.pauseCount > 0 ? ` · ${session.pauseCount} pause${session.pauseCount !== 1 ? 's' : ''}` : ''}
+            </Text>
+          </View>
+
+          {/* Right side */}
+          <View style={{ alignItems: 'flex-end', gap: 3, flexShrink: 0 }}>
+            <Text style={{ fontSize: FS.small, fontWeight: '700', color: C.textAccent }}>
+              {formatDurationMs(session.durationMs)}
+            </Text>
+            {isUploaded && (
+              <View style={{ backgroundColor: C.greenBg, borderWidth: 1, borderColor: C.greenBorder, borderRadius: R.chip, paddingHorizontal: 7, paddingVertical: 2 }}>
+                <Text style={{ fontSize: 7.5, fontWeight: '700', color: '#34D399' }}>✓ Done</Text>
+              </View>
+            )}
+            {isUploading && (
+              <View style={{ backgroundColor: 'rgba(96,165,250,0.14)', borderWidth: 1, borderColor: 'rgba(96,165,250,0.25)', borderRadius: R.chip, paddingHorizontal: 7, paddingVertical: 2 }}>
+                <Text style={{ fontSize: 7.5, fontWeight: '700', color: '#93C5FD' }}>Uploading…</Text>
+              </View>
+            )}
+          </View>
         </View>
-      </View>
-      
-      <View className="ml-2 items-center justify-center">
-        {renderUploadStatus()}
-      </View>
+      </GlassCard>
     </TouchableOpacity>
   );
 }

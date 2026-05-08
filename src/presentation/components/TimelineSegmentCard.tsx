@@ -1,39 +1,50 @@
 import React from 'react';
 import { View, Text } from 'react-native';
-import { Mic, PauseCircle } from 'lucide-react-native';
 import { RecordingTimelineSegment } from '../../domain/entities/RecordingTimelineSegment';
 import { formatTimeOnly } from '../../utils/dateTime';
 import { formatDurationMs } from '../../utils/duration';
+import { C, FS } from '../theme';
 
+// Rendered as a bare row — parent wraps multiple rows in one GlassCard.
+// Dividers between rows are the parent's responsibility.
 export function TimelineSegmentCard({ segment }: { segment: RecordingTimelineSegment }) {
   const isRecording = segment.type === 'recording';
-  const Icon = isRecording ? Mic : PauseCircle;
-  const color = isRecording ? '#10B981' : '#F59E0B'; // success vs warning
+  const dotColor = isRecording ? C.violet : C.amber;
+  const dotGlow = isRecording
+    ? '0 0 6px rgba(167,139,250,0.8)'
+    : '0 0 5px rgba(245,158,11,0.7)';
+  const durColor = isRecording ? C.textAccent : 'rgba(245,158,11,0.8)';
 
   return (
-    <View className="flex-row items-center bg-white p-4 rounded-2xl mb-3 shadow-sm border border-gray-100">
-      <View className={`w-12 h-12 rounded-full items-center justify-center mr-4 ${isRecording ? 'bg-green-100' : 'bg-amber-100'}`}>
-        <Icon color={color} size={24} />
-      </View>
-      <View className="flex-1">
-        <Text className="text-base font-medium text-text">
-          {isRecording ? 'Recorded Segment' : 'Paused Gap'}
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 8 }}>
+      <View
+        style={{
+          width: 7,
+          height: 7,
+          borderRadius: 3.5,
+          backgroundColor: dotColor,
+          flexShrink: 0,
+          boxShadow: dotGlow,
+        } as any}
+      />
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontSize: FS.small, fontWeight: '600', color: 'rgba(255,255,255,0.88)' }}>
+          {isRecording ? 'Recording' : 'Paused'}
         </Text>
-        <Text className="text-sm text-textSecondary mt-0.5">
-          {formatTimeOnly(segment.startedAt)} {segment.endedAt ? `- ${formatTimeOnly(segment.endedAt)}` : '(Active)'}
-        </Text>
-        {segment.reason === 'interruption' && (
-          <Text className="text-xs text-amber-600 mt-1">Auto-paused due to app interruption</Text>
-        )}
-        {segment.reason === 'background' && (
-          <Text className="text-xs text-amber-600 mt-1">Auto-paused (app went to background)</Text>
-        )}
-      </View>
-      <View>
-        <Text className="text-base font-semibold text-text">
-          {segment.durationMs !== undefined ? formatDurationMs(segment.durationMs) : '--:--'}
+        <Text style={{ fontSize: 9, fontWeight: '500', color: C.textSecondary, marginTop: 1, letterSpacing: 0.2 }}>
+          {formatTimeOnly(segment.startedAt)}
+          {segment.endedAt ? ` – ${formatTimeOnly(segment.endedAt)}` : ' – now'}
+          {(segment.reason === 'interruption' || segment.reason === 'background') && ' · auto'}
         </Text>
       </View>
+      <Text style={{ fontSize: FS.small, fontWeight: '700', color: durColor, flexShrink: 0 }}>
+        {segment.durationMs !== undefined ? formatDurationMs(segment.durationMs) : '--:--'}
+      </Text>
     </View>
   );
+}
+
+// Thin separator between timeline rows inside one GlassCard
+export function TimelineDivider() {
+  return <View style={{ height: 1, backgroundColor: 'rgba(255,255,255,0.06)', marginHorizontal: 2 }} />;
 }

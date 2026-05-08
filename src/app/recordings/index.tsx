@@ -1,53 +1,102 @@
-import React from 'react';
-import { View, Text, SafeAreaView, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, TextInput } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Inbox } from 'lucide-react-native';
-import { useRecordingStore } from '../../store/recordingStore';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { ChevronLeft, Inbox, Search } from 'lucide-react-native';
+import { ScreenBackground } from '../../presentation/components/ScreenBackground';
+import { GlassCard } from '../../presentation/components/GlassCard';
 import { RecordingListItem } from '../../presentation/components/RecordingListItem';
-import { BrandLogo } from '../../presentation/components/BrandLogo';
+import { useRecordingStore } from '../../store/recordingStore';
+import { C, FS, R, S } from '../../presentation/theme';
 
 export default function RecordingsListScreen() {
   const router = useRouter();
-  const recordings = useRecordingStore((state) => state.recordings);
+  const insets = useSafeAreaInsets();
+  const recordings = useRecordingStore(s => s.recordings);
+  const [query, setQuery] = useState('');
+
+  const sorted = [...recordings].reverse();
+  const filtered = query.trim()
+    ? sorted.filter(r => r.title.toLowerCase().includes(query.toLowerCase()))
+    : sorted;
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
-      <View className="bg-primary pt-14 pb-4 px-4 shadow-sm rounded-b-3xl flex-row items-center justify-between">
-        <TouchableOpacity onPress={() => router.back()} className="p-2">
-          <ChevronLeft color="white" size={28} />
+    <View style={{ flex: 1 }}>
+      <ScreenBackground variant="list" />
+
+      {/* Header */}
+      <View style={{
+        paddingTop: insets.top + 8,
+        paddingHorizontal: S.md,
+        paddingBottom: S.sm,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: S.sm,
+      }}>
+        <TouchableOpacity
+          onPress={() => router.back()}
+          style={{ width: 32, height: 32, borderRadius: 16, backgroundColor: C.chipBg, borderWidth: 1, borderColor: C.chipBorder, alignItems: 'center', justifyContent: 'center' }}
+        >
+          <ChevronLeft size={16} color={C.violet} />
         </TouchableOpacity>
-        <BrandLogo width={100} height={32} />
-        <View className="w-11" />
-      </View>
 
-      <View className="flex-1 px-4 pt-6">
-        <Text className="text-2xl font-bold text-text mb-6 ml-2">My Recordings</Text>
+        <Text style={{ flex: 1, fontSize: FS.h2, fontWeight: '700', letterSpacing: -0.2, color: C.textPrimary }}>
+          My Recordings
+        </Text>
 
-        {recordings.length === 0 ? (
-          <View className="flex-1 items-center justify-center pb-20">
-            <View className="bg-gray-100 p-6 rounded-full mb-4">
-              <Inbox color="#9CA3AF" size={48} />
-            </View>
-            <Text className="text-lg font-medium text-textSecondary mb-2">No recordings yet</Text>
-            <Text className="text-sm text-gray-400 text-center px-8">
-              Start your first ambient recording from the home screen.
-            </Text>
+        {recordings.length > 0 && (
+          <View style={{ backgroundColor: C.chipBg, borderWidth: 1, borderColor: C.chipBorder, borderRadius: R.chip, paddingHorizontal: 9, paddingVertical: 3 }}>
+            <Text style={{ fontSize: FS.micro, fontWeight: '700', color: C.textAccent }}>{recordings.length}</Text>
           </View>
-        ) : (
-          <FlatList
-            data={[...recordings].reverse()} // Show newest first
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 40 }}
-            renderItem={({ item }) => (
-              <RecordingListItem 
-                session={item} 
-                onPress={() => router.push(`/recordings/${item.id}`)} 
-              />
-            )}
-          />
         )}
       </View>
-    </SafeAreaView>
+
+      {/* Search bar */}
+      {recordings.length > 0 && (
+        <View style={{ paddingHorizontal: S.md, paddingBottom: S.sm }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: S.sm, backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: C.surfaceBorder, borderRadius: R.el, borderCurve: 'continuous', paddingHorizontal: S.md, paddingVertical: 9 } as any}>
+            <Search size={13} color={C.textSecondary} />
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              placeholder="Search recordings…"
+              placeholderTextColor={C.textSecondary}
+              style={{ flex: 1, fontSize: FS.body, fontWeight: '500', color: C.textPrimary }}
+              returnKeyType="search"
+              clearButtonMode="while-editing"
+            />
+          </View>
+        </View>
+      )}
+
+      {sorted.length === 0 ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: S.md, paddingBottom: 60 }}>
+          <GlassCard padding={S.xxl} style={{ alignItems: 'center', width: '100%' }}>
+            <View style={{ width: 56, height: 56, borderRadius: 28, backgroundColor: C.chipBg, borderWidth: 1, borderColor: C.chipBorder, alignItems: 'center', justifyContent: 'center', marginBottom: S.md }}>
+              <Inbox size={22} color={C.violetDim} />
+            </View>
+            <Text style={{ fontSize: FS.h2, fontWeight: '700', color: C.textPrimary, marginBottom: 6 }}>No recordings yet</Text>
+            <Text style={{ fontSize: FS.body, color: C.textSecondary, textAlign: 'center', lineHeight: 17 }}>
+              Start your first ambient recording from the home screen.
+            </Text>
+          </GlassCard>
+        </View>
+      ) : filtered.length === 0 ? (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: S.md, paddingBottom: 60 }}>
+          <Text style={{ fontSize: FS.body, color: C.textSecondary }}>No results for "{query}"</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filtered}
+          keyExtractor={item => item.id}
+          showsVerticalScrollIndicator={false}
+          contentInsetAdjustmentBehavior="automatic"
+          contentContainerStyle={{ paddingHorizontal: S.md, paddingBottom: insets.bottom + 24, gap: S.xs }}
+          renderItem={({ item }) => (
+            <RecordingListItem session={item} onPress={() => router.push(`/recordings/${item.id}`)} />
+          )}
+        />
+      )}
+    </View>
   );
 }

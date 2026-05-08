@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITAS — 10/10 Design System</title>
+<style>
+/* ═══════════════════════════════════════════
+   DESIGN SYSTEM TOKENS
+   Grid: 8px  |  Radius: pill/card/element/chip
+   Font scale: 52/22/16/13/11/9
+═══════════════════════════════════════════ */
+:root {
+  --sp1: 4px;   --sp2: 8px;  --sp3: 12px;
+  --sp4: 16px;  --sp5: 20px; --sp6: 24px;
+
+  --r-card: 22px;  --r-el: 14px;
+  --r-chip: 20px;  --r-sm: 10px;
+
+  --purple:   #7C3AED;
+  --purple-d: #4C1D95;
+  --purple-b: #9333EA;
+  --violet:   #A78BFA;
+  --amber:    #F59E0B;
+  --red:      #EF4444;
+  --green:    #10B981;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+  background: #05000f;
+  min-height: 100vh;
+  padding: 36px 20px 56px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-title {
+  color: #fff;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  text-align: center;
+  margin-bottom: 4px;
+}
+.page-sub {
+  color: rgba(167,139,250,.5);
+  font-size: 12px;
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+/* ── THEME TABS ─────────────────────── */
+.themes {
+  display: flex;
+  gap: 32px;
+  justify-content: center;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  width: 100%;
+}
+.theme-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.theme-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 4px 14px;
+  border-radius: 20px;
+}
+.dark-label  { color: #A78BFA; background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.25); }
+.light-label { color: #5B21B6; background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.2); }
+
+.screens-row { display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap; justify-content: center; }
+.screen-col  { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.screen-name { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+.dark-label ~ .screens-row .screen-name  { color: rgba(167,139,250,.5); }
+
+/* ── PHONE ──────────────────────────── */
+.phone {
+  width: 214px;
+  height: 462px;
+  border-radius: 46px;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+.phone.dark-phone {
+  border: 1.5px solid rgba(255,255,255,.1);
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255,255,255,.04),
+    0 0 0 5px rgba(0,0,0,.55),
+    0 0 0 6px rgba(255,255,255,.05),
+    0 32px 80px rgba(124,58,237,.28),
+    0 16px 40px rgba(0,0,0,.6);
+}
+.phone.light-phone {
+  border: 1.5px solid rgba(139,92,246,.2);
+  box-shadow:
+    0 0 0 5px rgba(0,0,0,.3),
+    0 0 0 6px rgba(255,255,255,.05),
+    0 32px 80px rgba(124,58,237,.2),
+    0 16px 40px rgba(0,0,0,.4);
+}
+
+/* Dynamic Island */
+.di {
+  position: absolute; top: 10px; left: 50%;
+  transform: translateX(-50%);
+  width: 76px; height: 24px;
+  background: #000;
+  border-radius: 20px;
+  z-index: 30;
+}
+
+.screen {
+  width: 100%; height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ══════════════════════════════════════
+   DARK THEME
+══════════════════════════════════════ */
+.dk { background: #0D0621; }
+
+/* Orbs */
+.orbs { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.o {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(36px);
+  pointer-events: none;
+}
+
+/* Status bar */
+.sb {
+  position: relative; z-index: 10;
+  padding: 14px 20px 0;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+}
+.sb-t { font-size: 13px; font-weight: 700; letter-spacing: -0.3px; }
+.dk .sb-t { color: #fff; }
+.lk .sb-t { color: #1E1B4B; }
+.sb-icons { display: flex; gap: 5px; align-items: center; }
+
+/* ── Unified Glass Card ─ */
+.gc {
+  background: rgba(255,255,255,.075);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: var(--r-card);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.12),
+    0 4px 20px rgba(0,0,0,.25);
+}
+/* light glass */
+.lgc {
+  background: rgba(255,255,255,.72);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid rgba(139,92,246,.14);
+  border-radius: var(--r-card);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.9),
+    0 4px 20px rgba(62,31,117,.08),
+    0 1px 4px rgba(62,31,117,.05);
+}
+
+/* Content wrapper */
+.body {
+  position: relative; z-index: 10;
+  flex: 1;
+  padding: var(--sp3) var(--sp3) var(--sp3);
+  display: flex; flex-direction: column;
+  gap: var(--sp2);
+  overflow: hidden;
+}
+
+/* ── Typography ─── */
+.t-hero  { font-size: 50px; font-weight: 200; letter-spacing: -3px; line-height: 1; }
+.t-h1    { font-size: 22px; font-weight: 800; letter-spacing: -0.5px; }
+.t-h2    { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; }
+.t-body  { font-size: 11px; font-weight: 500; }
+.t-small { font-size: 10px; font-weight: 600; }
+.t-micro { font-size: 9px;  font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
+
+.dk .t-primary   { color: #fff; }
+.dk .t-secondary { color: rgba(255,255,255,.42); }
+.dk .t-accent    { color: #A78BFA; }
+.lk .t-primary   { color: #1E1B4B; }
+.lk .t-secondary { color: #6B7280; }
+.lk .t-accent    { color: #5B21B6; }
+
+/* ── Row / Icon el ─── */
+.row    { display: flex; align-items: center; gap: var(--sp2); }
+.row-sb { display: flex; align-items: center; justify-content: space-between; }
+
+.icon-el {
+  width: 34px; height: 34px; border-radius: var(--r-el);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.dk .icon-el-def { background: rgba(139,92,246,.2); border: 1px solid rgba(139,92,246,.25); }
+.lk .icon-el-def { background: rgba(139,92,246,.12); border: 1px solid rgba(139,92,246,.18); }
+
+.icon-el-grad {
+  background: linear-gradient(135deg, #7c3aed, #4c1d95);
+  box-shadow: 0 4px 14px rgba(124,58,237,.45);
+}
+
+/* ── CTA primary ─── */
+.cta {
+  border-radius: var(--r-card);
+  padding: var(--sp4) var(--sp4);
+  position: relative; overflow: hidden;
+  background: linear-gradient(140deg, #8B5CF6 0%, #5B21B6 55%, #3E1F75 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.2),
+    0 0 0 1px rgba(139,92,246,.35),
+    0 8px 32px rgba(124,58,237,.55),
+    0 2px 8px rgba(0,0,0,.3);
+}
+.cta::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 44%;
+  background: linear-gradient(180deg, rgba(255,255,255,.13) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* CTA for light */
+.cta-lk {
+  border-radius: var(--r-card);
+  padding: var(--sp4) var(--sp4);
+  position: relative; overflow: hidden;
+  background: linear-gradient(140deg, #8B5CF6 0%, #5B21B6 55%, #3E1F75 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.25),
+    0 0 0 1px rgba(139,92,246,.4),
+    0 8px 28px rgba(124,58,237,.45);
+}
+.cta-lk::after {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 44%;
+  background: linear-gradient(180deg, rgba(255,255,255,.15) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* ── Chips / Pills ─── */
+.chip { border-radius: var(--r-chip); padding: 3px 9px; display: inline-flex; align-items: center; gap: 3px; }
+.dk .chip-def  { background: rgba(139,92,246,.18); border: 1px solid rgba(139,92,246,.28); color: #A78BFA; }
+.lk .chip-def  { background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.2); color: #5B21B6; }
+.chip-green { background: rgba(16,185,129,.14); border: 1px solid rgba(16,185,129,.25); color: #34D399; }
+.chip-red   { background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.28); color: #FCA5A5; }
+
+/* ── Divider ─── */
+.div { height: 1px; }
+.dk .div { background: rgba(255,255,255,.07); }
+.lk .div { background: rgba(139,92,246,.1); }
+
+/* ── Avatar / back btn ─── */
+.avatar {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: linear-gradient(135deg, #7c3aed, #5b21b6);
+  border: 1.5px solid rgba(167,139,250,.4);
+  display: flex; align-items: center; justify-content: center;
+}
+.back-btn {
+  width: 28px; height: 28px; border-radius: var(--r-sm);
+  display: flex; align-items: center; justify-content: center;
+}
+.dk .back-btn { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.1); }
+.lk .back-btn { background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.18); }
+
+/* ── Stat strip ─── */
+.stat-strip { display: flex; gap: var(--sp2); }
+.stat-block { flex: 1; padding: 10px 10px; border-radius: 16px; }
+.dk .stat-block { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09); }
+.lk .stat-block { background: rgba(255,255,255,.7); border: 1px solid rgba(139,92,246,.12); }
+.stat-val { font-size: 16px; font-weight: 800; letter-spacing: -0.5px; }
+.dk .stat-val { color: #fff; }
+.lk .stat-val { color: #3E1F75; }
+.stat-lbl { font-size: 8.5px; font-weight: 600; letter-spacing: .3px; margin-top: 1px; }
+.dk .stat-lbl { color: rgba(167,139,250,.55); }
+.lk .stat-lbl { color: #9CA3AF; }
+
+/* ── Search box ─── */
+.search {
+  padding: 9px 12px;
+  display: flex; align-items: center; gap: var(--sp2);
+  border-radius: var(--r-el);
+}
+.dk .search { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.09); }
+.lk .search { background: rgba(255,255,255,.7); border: 1px solid rgba(139,92,246,.12); }
+
+/* ── Record controls ─── */
+.ctrl-row { display: flex; align-items: center; justify-content: center; gap: 20px; }
+.ctrl-sm {
+  width: 50px; height: 50px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.dk .ctrl-sm { background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); }
+.lk .ctrl-sm { background: rgba(255,255,255,.75); border: 1px solid rgba(139,92,246,.15); box-shadow: 0 4px 14px rgba(62,31,117,.1); }
+.ctrl-stop {
+  width: 50px; height: 50px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+}
+.dk .ctrl-stop { background: rgba(239,68,68,.14); border: 1px solid rgba(239,68,68,.25); }
+.lk .ctrl-stop { background: rgba(255,240,240,.9); border: 1px solid rgba(239,68,68,.2); }
+.ctrl-main {
+  width: 68px; height: 68px; border-radius: 50%;
+  background: linear-gradient(145deg, #9333EA, #5B21B6);
+  border: 1px solid rgba(167,139,250,.5);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow:
+    0 0 0 7px rgba(124,58,237,.1),
+    0 0 0 14px rgba(124,58,237,.06),
+    0 8px 32px rgba(124,58,237,.6),
+    0 0 48px rgba(139,92,246,.18);
+}
+
+/* ── Waveform ─── */
+.wvf {
+  padding: 0 14px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 2.5px; height: 54px;
+}
+.wv-b {
+  width: 2.5px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.dk .wv-b { background: linear-gradient(180deg, #A78BFA 0%, #5B21B6 100%); }
+.lk .wv-b { background: linear-gradient(180deg, #7C3AED 0%, #4C1D95 100%); }
+
+/* ── Live badge ─── */
+.live-badge {
+  align-self: center;
+  display: flex; align-items: center; gap: 5px;
+  border-radius: var(--r-chip);
+  padding: 4px 10px 4px 8px;
+}
+.dk .live-badge { background: rgba(239,68,68,.13); border: 1px solid rgba(239,68,68,.28); }
+.lk .live-badge { background: rgba(255,235,235,.95); border: 1px solid rgba(239,68,68,.2); }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: #EF4444; box-shadow: 0 0 7px rgba(239,68,68,.9); }
+.dk .live-text { color: #FCA5A5; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+.lk .live-text { color: #DC2626; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+
+/* ── Timeline item ─── */
+.tl-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 11px;
+  border-radius: 14px;
+}
+.dk .tl-item { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.08); }
+.lk .tl-item { background: rgba(255,255,255,.7); border: 1px solid rgba(139,92,246,.1); }
+.tl-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+.tl-dur { margin-left: auto; font-size: 10px; font-weight: 700; flex-shrink: 0; }
+
+/* ── List item ─── */
+.list-item {
+  padding: 10px 12px;
+  display: flex; align-items: center; gap: 10px;
+  border-radius: var(--r-card);
+}
+/* uses gc/lgc */
+</style>
+</head>
+<body>
+
+<div class="page-title">VITAS Ambient Recorder — Design System</div>
+<p class="page-sub">8px grid · unified glass · strict type scale · dark + light</p>
+
+<div class="themes">
+
+<!-- ══════════════════════════════════════
+  DARK THEME
+══════════════════════════════════════ -->
+<div class="theme-col">
+  <div class="theme-label dark-label">Dark Glass</div>
+  <div class="screens-row">
+
+    <!-- HOME ──────────────────── -->
+    <div class="screen-col">
+      <div class="screen-name" style="color:rgba(167,139,250,.5)">Home</div>
+      <div class="phone dark-phone">
+        <div class="di"></div>
+        <div class="screen">
+          <div class="orbs">
+            <div class="o" style="width:200px;height:200px;background:radial-gradient(circle,rgba(124,58,237,.45) 0%,transparent 70%);top:-60px;right:-50px;"></div>
+            <div class="o" style="width:160px;height:160px;background:radial-gradient(circle,rgba(167,139,250,.2) 0%,transparent 70%);bottom:100px;left:-50px;"></div>
+            <div class="o" style="width:100px;height:100px;background:radial-gradient(circle,rgba(91,33,182,.3) 0%,transparent 70%);top:45%;left:35%;"></div>
+          </div>
+          <div class="dk" style="position:absolute;inset:0;z-index:0;background:#0D0621;"></div>
+
+          <!-- Status bar -->
+          <div class="sb dk" style="position:relative;z-index:10;flex-shrink:0;">
+            <span class="sb-t dk">9:41</span>
+            <div class="sb-icons">
+              <svg width="13" height="10" viewBox="0 0 13 10" fill="rgba(255,255,255,.85)"><rect x="0" y="3.5" width="2" height="6.5" rx=".5"/><rect x="3" y="2" width="2" height="8" rx=".5"/><rect x="6" y=".5" width="2" height="9.5" rx=".5"/><rect x="9" y="0" width="2" height="10" rx=".5"/></svg>
+              <svg width="21" height="10" viewBox="0 0 21 10" fill="none"><rect x=".5" y=".5" width="17" height="9" rx="2.5" stroke="rgba(255,255,255,.85)"/><rect x="2" y="2" width="12" height="6" rx="1.5" fill="rgba(255,255,255,.85)"/><path d="M19 3.5v3a1.5 1.5 0 0 0 0-3z" fill="rgba(255,255,255,.85)"/></svg>
+            </div>
+          </div>
+
+          <div class="body dk" style="position:relative;z-index:10;">
+
+            <!-- Brand row -->
+            <div class="row-sb" style="padding:2px 0 4px;">
+              <div>
+                <div class="t-h1 t-primary dk">VITAS</div>
+                <div class="t-micro t-accent dk" style="font-size:8px;margin-top:1px;">Ambient Recorder</div>
+              </div>
+              <div class="avatar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            </div>
+
+            <!-- Primary CTA -->
+            <div class="cta row">
+              <div class="icon-el" style="background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div class="t-h2" style="color:white;">Start Recording</div>
+                <div class="t-body" style="color:rgba(255,255,255,.6);margin-top:2px;">Tap to capture ambient audio</div>
+              </div>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+            <!-- Secondary -->
+            <div class="gc row" style="padding:12px 14px;">
+              <div class="icon-el icon-el-def dk">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(167,139,250,.9)" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div class="t-h2 t-primary dk">My Recordings</div>
+                <div class="t-body t-secondary dk" style="margin-top:2px;">12 sessions saved</div>
+              </div>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+            <!-- Stats -->
+            <div class="stat-strip dk">
+              <div class="stat-block dk"><div class="stat-val dk">12</div><div class="stat-lbl dk">Sessions</div></div>
+              <div class="stat-block dk"><div class="stat-val dk">3.2h</div><div class="stat-lbl dk">Recorded</div></div>
+              <div class="stat-block dk"><div class="stat-val dk">8</div><div class="stat-lbl dk">Uploaded</div></div>
+            </div>
+
+            <!-- Recent -->
+            <div class="t-micro t-accent dk">Recent</div>
+            <div class="gc row" style="padding:10px 12px;">
+              <div class="icon-el icon-el-grad">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div class="t-small t-primary dk">Visit — Room 204</div>
+                <div class="t-micro t-secondary dk" style="letter-spacing:.3px;margin-top:2px;">Today · 9:42 AM</div>
+              </div>
+              <div class="chip chip-def dk t-micro" style="font-size:9px;">12:47</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECORDER ─────────────── -->
+    <div class="screen-col">
+      <div class="screen-name" style="color:rgba(167,139,250,.5)">Recorder</div>
+      <div class="phone dark-phone">
+        <div class="di"></div>
+        <div class="screen">
+          <div class="orbs">
+            <div class="o" style="width:180px;height:180px;background:radial-gradient(circle,rgba(239,68,68,.18) 0%,transparent 70%);top:-40px;left:-40px;"></div>
+            <div class="o" style="width:160px;height:160px;background:radial-gradient(circle,rgba(124,58,237,.4) 0%,transparent 70%);top:-20px;right:-40px;"></div>
+            <div class="o" style="width:140px;height:140px;background:radial-gradient(circle,rgba(91,33,182,.25) 0%,transparent 70%);bottom:60px;left:-20px;"></div>
+          </div>
+          <div class="dk" style="position:absolute;inset:0;z-index:0;background:#0D0621;"></div>
+
+          <div class="sb dk" style="position:relative;z-index:10;flex-shrink:0;">
+            <span class="sb-t dk">9:54</span>
+            <div class="sb-icons">
+              <svg width="21" height="10" viewBox="0 0 21 10" fill="none"><rect x=".5" y=".5" width="17" height="9" rx="2.5" stroke="rgba(255,255,255,.85)"/><rect x="2" y="2" width="12" height="6" rx="1.5" fill="rgba(255,255,255,.85)"/><path d="M19 3.5v3a1.5 1.5 0 0 0 0-3z" fill="rgba(255,255,255,.85)"/></svg>
+            </div>
+          </div>
+
+          <div class="body dk" style="position:relative;z-index:10;gap:8px;">
+
+            <!-- Screen title -->
+            <div style="text-align:center;padding:2px 0;">
+              <div class="t-body t-secondary dk">Ambient Recorder</div>
+            </div>
+
+            <!-- LIVE -->
+            <div class="live-badge dk">
+              <div class="live-dot"></div>
+              <div class="live-text dk">LIVE</div>
+            </div>
+
+            <!-- Timer -->
+            <div class="t-hero t-primary dk" style="text-align:center;text-shadow:0 0 40px rgba(167,139,250,.25);">12:47</div>
+
+            <!-- Waveform -->
+            <div class="gc wvf dk">
+              <div class="wv-b dk" style="height:7px;opacity:.4;"></div>
+              <div class="wv-b dk" style="height:16px;opacity:.6;"></div>
+              <div class="wv-b dk" style="height:28px;"></div>
+              <div class="wv-b dk" style="height:12px;opacity:.55;"></div>
+              <div class="wv-b dk" style="height:36px;"></div>
+              <div class="wv-b dk" style="height:22px;opacity:.8;"></div>
+              <div class="wv-b dk" style="height:10px;opacity:.45;"></div>
+              <div class="wv-b dk" style="height:40px;"></div>
+              <div class="wv-b dk" style="height:18px;opacity:.7;"></div>
+              <div class="wv-b dk" style="height:32px;"></div>
+              <div class="wv-b dk" style="height:8px;opacity:.4;"></div>
+              <div class="wv-b dk" style="height:26px;opacity:.85;"></div>
+              <div class="wv-b dk" style="height:14px;opacity:.6;"></div>
+              <div class="wv-b dk" style="height:38px;"></div>
+              <div class="wv-b dk" style="height:20px;opacity:.75;"></div>
+              <div class="wv-b dk" style="height:9px;opacity:.4;"></div>
+            </div>
+
+            <!-- Controls -->
+            <div class="ctrl-row">
+              <div class="ctrl-sm dk">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="rgba(167,139,250,.9)"><rect x="6" y="4" width="4" height="16" rx="1.5"/><rect x="14" y="4" width="4" height="16" rx="1.5"/></svg>
+              </div>
+              <div class="ctrl-main">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="5"/></svg>
+              </div>
+              <div class="ctrl-stop dk">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(239,68,68,.85)"><rect x="5" y="5" width="14" height="14" rx="3"/></svg>
+              </div>
+            </div>
+
+            <!-- Timeline -->
+            <div class="t-micro t-accent dk">Timeline</div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div class="tl-item dk">
+                <div class="tl-dot" style="background:#A78BFA;box-shadow:0 0 6px rgba(167,139,250,.8);"></div>
+                <div style="flex:1;">
+                  <div class="t-small t-primary dk">Recording</div>
+                  <div class="t-micro t-secondary dk" style="letter-spacing:.3px;margin-top:1px;">9:42 AM – now</div>
+                </div>
+                <div class="tl-dur t-accent dk">12:47</div>
+              </div>
+              <div class="tl-item dk">
+                <div class="tl-dot" style="background:#F59E0B;box-shadow:0 0 5px rgba(245,158,11,.7);"></div>
+                <div style="flex:1;">
+                  <div class="t-small t-primary dk">Paused</div>
+                  <div class="t-micro t-secondary dk" style="letter-spacing:.3px;margin-top:1px;">9:38 – 9:42 AM</div>
+                </div>
+                <div class="tl-dur" style="color:rgba(245,158,11,.8);">0:22</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECORDINGS ───────────── -->
+    <div class="screen-col">
+      <div class="screen-name" style="color:rgba(167,139,250,.5)">List</div>
+      <div class="phone dark-phone">
+        <div class="di"></div>
+        <div class="screen">
+          <div class="orbs">
+            <div class="o" style="width:180px;height:180px;background:radial-gradient(circle,rgba(124,58,237,.4) 0%,transparent 70%);top:-50px;right:-40px;"></div>
+            <div class="o" style="width:130px;height:130px;background:radial-gradient(circle,rgba(167,139,250,.18) 0%,transparent 70%);bottom:80px;left:-30px;"></div>
+          </div>
+          <div style="position:absolute;inset:0;z-index:0;background:#0D0621;"></div>
+
+          <div class="sb dk" style="position:relative;z-index:10;flex-shrink:0;">
+            <span class="sb-t dk">9:41</span>
+            <div class="sb-icons">
+              <svg width="21" height="10" viewBox="0 0 21 10" fill="none"><rect x=".5" y=".5" width="17" height="9" rx="2.5" stroke="rgba(255,255,255,.85)"/><rect x="2" y="2" width="12" height="6" rx="1.5" fill="rgba(255,255,255,.85)"/><path d="M19 3.5v3a1.5 1.5 0 0 0 0-3z" fill="rgba(255,255,255,.85)"/></svg>
+            </div>
+          </div>
+
+          <div class="body dk" style="position:relative;z-index:10;gap:7px;">
+
+            <div class="row-sb">
+              <div class="row" style="gap:8px;">
+                <div class="back-btn dk">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                </div>
+                <div class="t-h1 t-primary dk">Recordings</div>
+              </div>
+              <div class="chip chip-def dk t-micro" style="font-size:8.5px;">12 total</div>
+            </div>
+
+            <div class="search dk">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2.5" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+              <span class="t-body t-secondary dk">Search sessions…</span>
+            </div>
+
+            <div class="t-micro t-accent dk">Today</div>
+
+            <div class="gc list-item dk">
+              <div class="icon-el icon-el-grad">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="t-small t-primary dk">Visit — Room 204</div>
+                <div class="t-micro t-secondary dk" style="letter-spacing:.3px;margin-top:2px;">9:42 AM · 3 pauses</div>
+              </div>
+              <div class="chip chip-def dk t-micro" style="font-size:9px;">12:47</div>
+            </div>
+
+            <div class="div dk"></div>
+            <div class="t-micro t-accent dk">Yesterday</div>
+
+            <div class="gc list-item dk">
+              <div class="icon-el icon-el-grad">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="t-small t-primary dk">Morning Assessment</div>
+                <div class="t-micro t-secondary dk" style="letter-spacing:.3px;margin-top:2px;">8:15 AM · 1 pause</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0;">
+                <div class="t-small" style="color:#A78BFA;font-weight:700;">08:02</div>
+                <div class="chip chip-green t-micro" style="font-size:7.5px;padding:2px 7px;">✓ Done</div>
+              </div>
+            </div>
+
+            <div class="gc list-item dk">
+              <div class="icon-el icon-el-grad">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              </div>
+              <div style="flex:1;min-width:0;">
+                <div class="t-small t-primary dk">End-of-Shift Notes</div>
+                <div class="t-micro t-secondary dk" style="letter-spacing:.3px;margin-top:2px;">4:52 PM · No pauses</div>
+              </div>
+              <div class="t-small" style="color:#A78BFA;font-weight:700;flex-shrink:0;">05:31</div>
+            </div>
+
+            <div style="text-align:center;" class="t-micro" style="color:rgba(167,139,250,.35);">
+              <span style="color:rgba(139,92,246,.4);font-size:9px;letter-spacing:.5px;">↓ 9 more</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /screens-row dark -->
+</div><!-- /dark theme col -->
+
+
+<!-- ══════════════════════════════════════
+  LIGHT THEME
+══════════════════════════════════════ -->
+<div class="theme-col">
+  <div class="theme-label light-label">Light Frost</div>
+  <div class="screens-row">
+
+    <!-- LIGHT HOME ────────────── -->
+    <div class="screen-col">
+      <div class="screen-name" style="color:#5B21B6;opacity:.6;">Home</div>
+      <div class="phone light-phone">
+        <div class="di"></div>
+        <div class="screen">
+          <div class="orbs">
+            <div class="o" style="width:220px;height:220px;background:radial-gradient(circle,rgba(139,92,246,.22) 0%,transparent 70%);top:-60px;right:-60px;"></div>
+            <div class="o" style="width:160px;height:160px;background:radial-gradient(circle,rgba(167,139,250,.18) 0%,transparent 70%);bottom:80px;left:-50px;"></div>
+            <div class="o" style="width:100px;height:100px;background:radial-gradient(circle,rgba(196,181,253,.25) 0%,transparent 70%);top:50%;left:40%;"></div>
+          </div>
+          <div class="lk" style="position:absolute;inset:0;z-index:0;background:linear-gradient(160deg,#F3F0FF 0%,#FAF8FF 50%,#FFFFFF 100%);"></div>
+
+          <div class="sb lk" style="position:relative;z-index:10;flex-shrink:0;">
+            <span class="sb-t lk">9:41</span>
+            <div class="sb-icons">
+              <svg width="13" height="10" viewBox="0 0 13 10" fill="#4C1D95" opacity=".7"><rect x="0" y="3.5" width="2" height="6.5" rx=".5"/><rect x="3" y="2" width="2" height="8" rx=".5"/><rect x="6" y=".5" width="2" height="9.5" rx=".5"/><rect x="9" y="0" width="2" height="10" rx=".5"/></svg>
+              <svg width="21" height="10" viewBox="0 0 21 10" fill="none"><rect x=".5" y=".5" width="17" height="9" rx="2.5" stroke="#4C1D95" opacity=".7"/><rect x="2" y="2" width="12" height="6" rx="1.5" fill="#4C1D95" opacity=".7"/><path d="M19 3.5v3a1.5 1.5 0 0 0 0-3z" fill="#4C1D95" opacity=".7"/></svg>
+            </div>
+          </div>
+
+          <div class="body lk" style="position:relative;z-index:10;">
+
+            <div class="row-sb" style="padding:2px 0 4px;">
+              <div>
+                <div class="t-h1 t-primary lk">VITAS</div>
+                <div class="t-micro t-accent lk" style="font-size:8px;margin-top:1px;">Ambient Recorder</div>
+              </div>
+              <div class="avatar">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2.5" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              </div>
+            </div>
+
+            <!-- Primary CTA (same gradient, both themes) -->
+            <div class="cta-lk row">
+              <div class="icon-el" style="background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div class="t-h2" style="color:white;">Start Recording</div>
+                <div class="t-body" style="color:rgba(255,255,255,.65);margin-top:2px;">Tap to capture ambient audio</div>
+              </div>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+            <div class="lgc row" style="padding:12px 14px;">
+              <div class="icon-el icon-el-def lk">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(91,33,182,.8)" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M9 21V9"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div class="t-h2 t-primary lk">My Recordings</div>
+                <div class="t-body t-secondary lk" style="margin-top:2px;">12 sessions saved</div>
+              </div>
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="rgba(62,31,117,.25)" stroke-width="2.5" stroke-linecap="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+
+            <div class="stat-strip lk">
+              <div class="stat-block lk"><div class="stat-val lk">12</div><div class="stat-lbl lk">Sessions</div></div>
+              <div class="stat-block lk"><div class="stat-val lk">3.2h</div><div class="stat-lbl lk">Recorded</div></div>
+              <div class="stat-block lk"><div class="stat-val lk">8</div><div class="stat-lbl lk">Uploaded</div></div>
+            </div>
+
+            <div class="t-micro t-accent lk">Recent</div>
+            <div class="lgc list-item lk">
+              <div class="icon-el icon-el-grad">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+              </div>
+              <div style="flex:1;">
+                <div class="t-small t-primary lk">Visit — Room 204</div>
+                <div class="t-micro t-secondary lk" style="letter-spacing:.3px;margin-top:2px;">Today · 9:42 AM</div>
+              </div>
+              <div class="chip chip-def lk t-micro" style="font-size:9px;">12:47</div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIGHT RECORDER ─────────── -->
+    <div class="screen-col">
+      <div class="screen-name" style="color:#5B21B6;opacity:.6;">Recorder</div>
+      <div class="phone light-phone">
+        <div class="di"></div>
+        <div class="screen">
+          <div class="orbs">
+            <div class="o" style="width:180px;height:180px;background:radial-gradient(circle,rgba(239,68,68,.1) 0%,transparent 70%);top:-40px;left:-40px;"></div>
+            <div class="o" style="width:180px;height:180px;background:radial-gradient(circle,rgba(139,92,246,.2) 0%,transparent 70%);top:-30px;right:-40px;"></div>
+            <div class="o" style="width:120px;height:120px;background:radial-gradient(circle,rgba(196,181,253,.2) 0%,transparent 70%);bottom:80px;right:20px;"></div>
+          </div>
+          <div class="lk" style="position:absolute;inset:0;z-index:0;background:linear-gradient(160deg,#F3F0FF 0%,#FAF8FF 50%,#FFFFFF 100%);"></div>
+
+          <div class="sb lk" style="position:relative;z-index:10;flex-shrink:0;">
+            <span class="sb-t lk">9:54</span>
+            <div class="sb-icons">
+              <svg width="21" height="10" viewBox="0 0 21 10" fill="none"><rect x=".5" y=".5" width="17" height="9" rx="2.5" stroke="#4C1D95" opacity=".7"/><rect x="2" y="2" width="12" height="6" rx="1.5" fill="#4C1D95" opacity=".7"/><path d="M19 3.5v3a1.5 1.5 0 0 0 0-3z" fill="#4C1D95" opacity=".7"/></svg>
+            </div>
+          </div>
+
+          <div class="body lk" style="position:relative;z-index:10;gap:8px;">
+            <div style="text-align:center;padding:2px 0;">
+              <div class="t-body t-secondary lk">Ambient Recorder</div>
+            </div>
+            <div class="live-badge lk">
+              <div class="live-dot"></div>
+              <div class="live-text lk">LIVE</div>
+            </div>
+            <div class="t-hero t-primary lk" style="text-align:center;">12:47</div>
+
+            <div class="lgc wvf lk">
+              <div class="wv-b lk" style="height:7px;opacity:.35;"></div>
+              <div class="wv-b lk" style="height:16px;opacity:.55;"></div>
+              <div class="wv-b lk" style="height:28px;opacity:.9;"></div>
+              <div class="wv-b lk" style="height:12px;opacity:.5;"></div>
+              <div class="wv-b lk" style="height:36px;"></div>
+              <div class="wv-b lk" style="height:22px;opacity:.75;"></div>
+              <div class="wv-b lk" style="height:10px;opacity:.4;"></div>
+              <div class="wv-b lk" style="height:40px;"></div>
+              <div class="wv-b lk" style="height:18px;opacity:.65;"></div>
+              <div class="wv-b lk" style="height:32px;opacity:.9;"></div>
+              <div class="wv-b lk" style="height:8px;opacity:.35;"></div>
+              <div class="wv-b lk" style="height:26px;opacity:.8;"></div>
+              <div class="wv-b lk" style="height:14px;opacity:.55;"></div>
+              <div class="wv-b lk" style="height:38px;"></div>
+              <div class="wv-b lk" style="height:20px;opacity:.7;"></div>
+              <div class="wv-b lk" style="height:9px;opacity:.38;"></div>
+            </div>
+
+            <div class="ctrl-row">
+              <div class="ctrl-sm lk">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="rgba(91,33,182,.8)"><rect x="6" y="4" width="4" height="16" rx="1.5"/><rect x="14" y="4" width="4" height="16" rx="1.5"/></svg>
+              </div>
+              <div class="ctrl-main">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="5"/></svg>
+              </div>
+              <div class="ctrl-stop lk">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="rgba(239,68,68,.8)"><rect x="5" y="5" width="14" height="14" rx="3"/></svg>
+              </div>
+            </div>
+
+            <div class="t-micro t-accent lk">Timeline</div>
+            <div style="display:flex;flex-direction:column;gap:5px;">
+              <div class="tl-item lk">
+                <div class="tl-dot" style="background:#7C3AED;box-shadow:0 0 5px rgba(124,58,237,.5);"></div>
+                <div style="flex:1;">
+                  <div class="t-small t-primary lk">Recording</div>
+                  <div class="t-micro t-secondary lk" style="letter-spacing:.3px;margin-top:1px;">9:42 AM – now</div>
+                </div>
+                <div class="tl-dur t-accent lk">12:47</div>
+              </div>
+              <div class="tl-item lk">
+                <div class="tl-dot" style="background:#F59E0B;box-shadow:0 0 4px rgba(245,158,11,.5);"></div>
+                <div style="flex:1;">
+                  <div class="t-small t-primary lk">Paused</div>
+                  <div class="t-micro t-secondary lk" style="letter-spacing:.3px;margin-top:1px;">9:38 – 9:42 AM</div>
+                </div>
+                <div class="tl-dur" style="color:rgba(245,158,11,.85);">0:22</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /light screens row -->
+</div><!-- /light theme col -->
+
+</div><!-- /themes -->
+
+<!-- FOOTNOTE -->
+<div style="max-width:760px;width:100%;margin-top:40px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;">
+  <div>
+    <div style="color:#A78BFA;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">DESIGN TOKENS</div>
+    <div style="color:rgba(255,255,255,.45);font-size:10.5px;line-height:1.7;">8px grid · 22px cards · 14px elements · 20px pills</div>
+  </div>
+  <div>
+    <div style="color:#A78BFA;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">GLASS FORMULA</div>
+    <div style="color:rgba(255,255,255,.45);font-size:10.5px;line-height:1.7;">rgba(255,255,255,.075) · blur(28px) · 1px rgba-border · inset top highlight</div>
+  </div>
+  <div>
+    <div style="color:#A78BFA;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">TYPE SCALE</div>
+    <div style="color:rgba(255,255,255,.45);font-size:10.5px;line-height:1.7;">50 hero · 22 h1 · 14 h2 · 11 body · 10 small · 9 micro</div>
+  </div>
+  <div>
+    <div style="color:#A78BFA;font-size:10px;font-weight:700;letter-spacing:1px;margin-bottom:6px;">WHICH THEME?</div>
+    <div style="color:rgba(255,255,255,.45);font-size:10.5px;line-height:1.7;">Dark Glass = bedside/clinical focus. Light Frost = daytime / outdoor use.</div>
+  </div>
+</div>
+
+<div style="text-align:center;margin-top:24px;color:rgba(167,139,250,.4);font-size:12px;">
+  Dark or Light? Or a system that switches? Let me know and I'll write the full spec + implementation plan.
+</div>
+
+</body>
+</html>
