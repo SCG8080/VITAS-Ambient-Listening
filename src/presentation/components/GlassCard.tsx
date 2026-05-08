@@ -9,6 +9,8 @@ interface GlassCardProps {
   padding?: number;
   paddingHorizontal?: number;
   paddingVertical?: number;
+  /** Makes the inner content wrapper flex:1 so a ScrollView child can fill remaining height */
+  fillHeight?: boolean;
 }
 
 // Single unified glass card used everywhere — no nested glass.
@@ -20,12 +22,14 @@ export function GlassCard({
   padding,
   paddingHorizontal,
   paddingVertical,
+  fillHeight,
 }: GlassCardProps) {
   const contentPadding: ViewStyle = {
     padding: padding !== undefined ? padding : 13,
     ...(paddingHorizontal !== undefined && { paddingHorizontal }),
     ...(paddingVertical !== undefined && { paddingVertical }),
     ...(padding === undefined && paddingHorizontal !== undefined && { padding: undefined }),
+    ...(fillHeight && { flex: 1 }),
   };
 
   return (

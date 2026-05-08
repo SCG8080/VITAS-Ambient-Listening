@@ -3,13 +3,13 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { LinearGradient } from 'expo-linear-gradient';
-import { ChevronRight, LayoutGrid, Music } from 'lucide-react-native';
+import { ChevronRight, LayoutGrid } from 'lucide-react-native';
 import { ScreenBackground } from '../presentation/components/ScreenBackground';
 import { GlassCard } from '../presentation/components/GlassCard';
 import { BrandLogo } from '../presentation/components/BrandLogo';
+import { RecordingListItem } from '../presentation/components/RecordingListItem';
 import { useRecordingStore } from '../store/recordingStore';
 import { formatDurationMs } from '../utils/duration';
-import { formatDateTime } from '../utils/dateTime';
 import { C, FS, G, R, S } from '../presentation/theme';
 
 export default function HomeScreen() {
@@ -19,7 +19,7 @@ export default function HomeScreen() {
 
   const totalMs = recordings.reduce((sum, r) => sum + r.durationMs, 0);
   const uploadedCount = recordings.filter(r => r.uploadStatus === 'uploaded').length;
-  const recent = recordings.length > 0 ? recordings[recordings.length - 1] : null;
+  const recent = recordings.length > 0 ? [...recordings].reverse().slice(0, 5) : null;
 
   return (
     <View style={{ flex: 1 }}>
@@ -119,22 +119,9 @@ export default function HomeScreen() {
             <Text style={{ fontSize: FS.micro, fontWeight: '600', letterSpacing: 1.4, textTransform: 'uppercase', color: C.violetDim, paddingHorizontal: 2 }}>
               Recent
             </Text>
-            <TouchableOpacity onPress={() => router.push(`/recordings/${recent.id}`)} activeOpacity={0.75}>
-              <GlassCard padding={0}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, padding: S.md }}>
-                  <LinearGradient colors={G.icon} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={{ width: 34, height: 34, borderRadius: R.el, borderCurve: 'continuous', alignItems: 'center', justifyContent: 'center', flexShrink: 0, boxShadow: '0 4px 12px rgba(124,58,237,0.45)' } as any}>
-                    <Music size={14} color="rgba(255,255,255,0.9)" />
-                  </LinearGradient>
-                  <View style={{ flex: 1 }}>
-                    <Text numberOfLines={1} style={{ fontSize: FS.small, fontWeight: '600', color: 'rgba(255,255,255,0.88)' }}>{recent.title}</Text>
-                    <Text style={{ fontSize: 9, fontWeight: '500', color: C.textSecondary, marginTop: 2 }}>{formatDateTime(recent.startedAt)}</Text>
-                  </View>
-                  <View style={{ backgroundColor: C.chipBg, borderWidth: 1, borderColor: C.chipBorder, borderRadius: R.chip, paddingHorizontal: 9, paddingVertical: 3 }}>
-                    <Text style={{ fontSize: 9, fontWeight: '700', color: C.textAccent }}>{formatDurationMs(recent.durationMs)}</Text>
-                  </View>
-                </View>
-              </GlassCard>
-            </TouchableOpacity>
+            {recent.map(r => (
+              <RecordingListItem key={r.id} session={r} onPress={() => router.push(`/recordings/${r.id}`)} />
+            ))}
           </>
         )}
       </ScrollView>

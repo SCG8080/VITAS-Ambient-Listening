@@ -24,10 +24,7 @@ export default function RecorderScreen() {
   const [nameModalVisible, setNameModalVisible] = useState(false);
   const [recordingName, setRecordingName] = useState('');
 
-  const handleStartPress = () => {
-    setRecordingName('');
-    setNameModalVisible(true);
-  };
+  const handleStartPress = () => { setRecordingName(''); setNameModalVisible(true); };
 
   const handleStartConfirm = async () => {
     setNameModalVisible(false);
@@ -40,46 +37,43 @@ export default function RecorderScreen() {
   const handleResume = () => recordingSessionService.resumeRecording();
   const handleStop   = async () => { await recordingSessionService.stopRecording(); router.replace('/preview'); };
 
+  // Newest event first so the currently-active segment is always at the top
   const segments = [...(currentSession?.timelineSegments ?? [])].reverse();
+  const hasTimeline = segments.length > 0;
 
   return (
     <View style={{ flex: 1 }}>
       <ScreenBackground variant="recorder" />
 
-      <View style={{ flex: 1, paddingTop: insets.top + 8, paddingHorizontal: S.md, paddingBottom: insets.bottom + 16, gap: S.sm }}>
-        {/* Screen title */}
-        <Text style={{ fontSize: FS.body, fontWeight: '500', color: C.textSecondary, textAlign: 'center', paddingVertical: 2 }}>
-          Ambient Recorder
-        </Text>
+      <View style={{ flex: 1, paddingTop: insets.top + 8, paddingHorizontal: S.md, paddingBottom: insets.bottom + 16 }}>
 
-        {/* Live / Paused badge */}
-        <RecordingStatusBadge status={currentSession?.status ?? 'idle'} />
-
-        {/* Timer */}
-        <RecordingTimer durationMs={elapsedTimeMs} />
-
-        {/* Waveform */}
-        <RecordingWaveform isRecording={isRecording} />
-
-        {/* Controls */}
-        <View style={{ alignItems: 'center', marginVertical: S.sm }}>
-          <RecorderControls
-            status={currentSession?.status ?? 'idle'}
-            onStart={handleStartPress}
-            onPause={handlePause}
-            onResume={handleResume}
-            onStop={handleStop}
-          />
+        {/* ── Fixed top controls area ── */}
+        <View style={{ gap: S.sm }}>
+          <Text style={{ fontSize: FS.body, fontWeight: '500', color: C.textSecondary, textAlign: 'center', paddingVertical: 2 }}>
+            Ambient Recorder
+          </Text>
+          <RecordingStatusBadge status={currentSession?.status ?? 'idle'} />
+          <RecordingTimer durationMs={elapsedTimeMs} />
+          <RecordingWaveform isRecording={isRecording} />
+          <View style={{ alignItems: 'center', marginVertical: S.sm }}>
+            <RecorderControls
+              status={currentSession?.status ?? 'idle'}
+              onStart={handleStartPress}
+              onPause={handlePause}
+              onResume={handleResume}
+              onStop={handleStop}
+            />
+          </View>
         </View>
 
-        {/* Timeline — scrollable, all segments */}
-        {segments.length > 0 && (
-          <>
+        {/* ── Scrollable timeline fills the rest of the screen ── */}
+        {hasTimeline && (
+          <View style={{ flex: 1, gap: S.xs, marginTop: S.xs }}>
             <Text style={{ fontSize: FS.micro, fontWeight: '600', letterSpacing: 1.4, textTransform: 'uppercase', color: C.violetDim, paddingHorizontal: 2 }}>
               Timeline
             </Text>
-            <GlassCard paddingHorizontal={13} paddingVertical={4} padding={0} style={{ maxHeight: 180 }}>
-              <ScrollView showsVerticalScrollIndicator={false} nestedScrollEnabled>
+            <GlassCard fillHeight paddingHorizontal={13} paddingVertical={4} padding={0} style={{ flex: 1 }}>
+              <ScrollView showsVerticalScrollIndicator={false}>
                 {segments.map((seg, idx) => (
                   <React.Fragment key={seg.id}>
                     {idx > 0 && <TimelineDivider />}
@@ -88,38 +82,19 @@ export default function RecorderScreen() {
                 ))}
               </ScrollView>
             </GlassCard>
-          </>
+          </View>
         )}
       </View>
 
-      {/* Name input modal */}
-      <Modal
-        transparent
-        visible={nameModalVisible}
-        animationType="fade"
-        onRequestClose={() => setNameModalVisible(false)}
-      >
+      {/* ── Name input modal ── */}
+      <Modal transparent visible={nameModalVisible} animationType="fade" onRequestClose={() => setNameModalVisible(false)}>
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.65)', alignItems: 'center', justifyContent: 'center', paddingHorizontal: S.xxl }}
         >
-          <View style={{
-            width: '100%',
-            maxWidth: 340,
-            backgroundColor: '#1A0E2E',
-            borderRadius: R.card,
-            borderCurve: 'continuous',
-            borderWidth: 1,
-            borderColor: C.surfaceBorder,
-            padding: S.xxl,
-            gap: S.md,
-          } as any}>
-            <Text style={{ fontSize: FS.h2, fontWeight: '700', color: C.textPrimary, letterSpacing: -0.2 }}>
-              Name this recording
-            </Text>
-            <Text style={{ fontSize: FS.body, color: C.textSecondary, lineHeight: 16 }}>
-              Give it a short title so you can find it later.
-            </Text>
+          <View style={{ width: '100%', maxWidth: 340, backgroundColor: '#1A0E2E', borderRadius: R.card, borderCurve: 'continuous', borderWidth: 1, borderColor: C.surfaceBorder, padding: S.xxl, gap: S.md } as any}>
+            <Text style={{ fontSize: FS.h2, fontWeight: '700', color: C.textPrimary, letterSpacing: -0.2 }}>Name this recording</Text>
+            <Text style={{ fontSize: FS.body, color: C.textSecondary, lineHeight: 16 }}>Give it a short title so you can find it later.</Text>
 
             <TextInput
               value={recordingName}
@@ -129,18 +104,7 @@ export default function RecorderScreen() {
               autoFocus
               returnKeyType="done"
               onSubmitEditing={handleStartConfirm}
-              style={{
-                backgroundColor: 'rgba(255,255,255,0.07)',
-                borderWidth: 1,
-                borderColor: C.surfaceBorder,
-                borderRadius: R.el,
-                borderCurve: 'continuous',
-                paddingHorizontal: S.md,
-                paddingVertical: 11,
-                fontSize: FS.h2,
-                fontWeight: '500',
-                color: C.textPrimary,
-              } as any}
+              style={{ backgroundColor: 'rgba(255,255,255,0.07)', borderWidth: 1, borderColor: C.surfaceBorder, borderRadius: R.el, borderCurve: 'continuous', paddingHorizontal: S.md, paddingVertical: 11, fontSize: FS.h2, fontWeight: '500', color: C.textPrimary } as any}
             />
 
             <View style={{ flexDirection: 'row', gap: S.sm }}>
@@ -150,7 +114,6 @@ export default function RecorderScreen() {
               >
                 <Text style={{ fontSize: FS.body, fontWeight: '600', color: C.textSecondary }}>Cancel</Text>
               </TouchableOpacity>
-
               <TouchableOpacity onPress={handleStartConfirm} activeOpacity={0.85} style={{ flex: 2 }}>
                 <LinearGradient
                   colors={G.cta}
