@@ -4,12 +4,13 @@ import {
   View,
   Text,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   ScrollView,
   Alert,
   StyleSheet,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { X, Download, Check, ChevronRight } from 'lucide-react-native';
+import { X, Download, Check } from 'lucide-react-native';
 import { C, S, R } from '../theme';
 import { WHISPER_MODELS, QUALITY_LABELS, WhisperModel } from '../../application/services/WhisperModels';
 import { transcriptionService } from '../../application/services/TranscriptionService';
@@ -60,63 +61,77 @@ export function ModelSelectorModal({ visible, selectedKey, onSelectModel, onClos
   const multilingual = WHISPER_MODELS.filter(m => m.language === 'multilingual');
 
   return (
-    <Modal visible={visible} animationType="slide" transparent presentationStyle="overFullScreen" onRequestClose={onClose}>
-      <View style={styles.overlay}>
-        <TouchableOpacity style={styles.dismissArea} onPress={onClose} activeOpacity={1} />
+    <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
+      {/*
+        TouchableWithoutFeedback on the backdrop closes the modal.
+        The sheet View uses onStartShouldSetResponder to stop touches
+        from bubbling up to the backdrop — this is the standard RN pattern
+        that ensures buttons inside the sheet always receive their taps.
+      */}
+      <TouchableWithoutFeedback onPress={onClose}>
+        <View style={styles.overlay}>
+          <View
+            style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}
+            onStartShouldSetResponder={() => true}
+          >
+            {/* Handle */}
+            <View style={styles.handle} />
 
-        <View style={[styles.sheet, { paddingBottom: insets.bottom + 16 }]}>
-          {/* Handle */}
-          <View style={styles.handle} />
-
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={{ flex: 1 }}>
-              <Text style={styles.title}>Select AI Model</Text>
-              <Text style={styles.subtitle}>Higher quality = slower transcription. All run 100% on-device.</Text>
+            {/* Header */}
+            <View style={styles.header}>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.title}>Select AI Model</Text>
+                <Text style={styles.subtitle}>Higher quality = slower transcription · All run 100% on-device</Text>
+              </View>
+              <TouchableOpacity onPress={onClose} style={styles.closeBtn} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
+                <X size={16} color={C.textSecondary} />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-              <X size={16} color={C.textSecondary} />
-            </TouchableOpacity>
+
+            <ScrollView
+              showsVerticalScrollIndicator={false}
+              style={{ flex: 1 }}
+              contentContainerStyle={{ paddingBottom: 8 }}
+              keyboardShouldPersistTaps="handled"
+            >
+              <SectionLabel text="ENGLISH ONLY" note="Higher accuracy for English than same-size multilingual" />
+              {english.map(model => (
+                <ModelCard
+                  key={model.key}
+                  model={model}
+                  isSelected={selectedKey === model.key}
+                  isDownloaded={downloadedKeys.has(model.key)}
+                  downloadState={downloadStates[model.key]}
+                  onSelect={() => { onSelectModel(model.key); onClose(); }}
+                  onDownload={() => handleDownload(model)}
+                />
+              ))}
+
+              <SectionLabel text="MULTILINGUAL · 99 LANGUAGES" note="Use when patients speak languages other than English" />
+              {multilingual.map(model => (
+                <ModelCard
+                  key={model.key}
+                  model={model}
+                  isSelected={selectedKey === model.key}
+                  isDownloaded={downloadedKeys.has(model.key)}
+                  downloadState={downloadStates[model.key]}
+                  onSelect={() => { onSelectModel(model.key); onClose(); }}
+                  onDownload={() => handleDownload(model)}
+                />
+              ))}
+            </ScrollView>
           </View>
-
-          <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }} contentContainerStyle={{ paddingBottom: 8 }}>
-            <SectionHeader title="English Only" subtitle="Higher accuracy for English than multilingual at same size" />
-            {english.map(model => (
-              <ModelCard
-                key={model.key}
-                model={model}
-                isSelected={selectedKey === model.key}
-                isDownloaded={downloadedKeys.has(model.key)}
-                downloadState={downloadStates[model.key]}
-                onSelect={() => { onSelectModel(model.key); onClose(); }}
-                onDownload={() => handleDownload(model)}
-              />
-            ))}
-
-            <SectionHeader title="Multilingual · 99 Languages" subtitle="Use when patients speak languages other than English" />
-            {multilingual.map(model => (
-              <ModelCard
-                key={model.key}
-                model={model}
-                isSelected={selectedKey === model.key}
-                isDownloaded={downloadedKeys.has(model.key)}
-                downloadState={downloadStates[model.key]}
-                onSelect={() => { onSelectModel(model.key); onClose(); }}
-                onDownload={() => handleDownload(model)}
-              />
-            ))}
-          </ScrollView>
         </View>
-      </View>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 }
 
-function SectionHeader({ title, subtitle }: { title: string; subtitle: string }) {
+function SectionLabel({ text, note }: { text: string; note: string }) {
   return (
     <View style={styles.sectionHeader}>
-      <Text style={styles.sectionTitle}>{title}</Text>
-      <Text style={styles.sectionSubtitle}>{subtitle}</Text>
+      <Text style={styles.sectionTitle}>{text}</Text>
+      <Text style={styles.sectionNote}>{note}</Text>
     </View>
   );
 }
@@ -134,35 +149,40 @@ function ModelCard({ model, isSelected, isDownloaded, downloadState, onSelect, o
   const isDownloading = downloadState?.downloading ?? false;
   const progress = downloadState?.progress ?? 0;
 
-  return (
-    <View style={[styles.card, isSelected && styles.cardSelected]}>
-      {/* Top row: name + badges */}
-      <View style={styles.cardTop}>
-        <View style={{ flex: 1 }}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
-            <Text style={[styles.modelName, isSelected && styles.modelNameSelected]}>{model.key}</Text>
-            {model.isDefault && <Badge label="Default" color="#6D28D9" />}
-            {isDownloaded && !isSelected && <Badge label="Downloaded" color="#059669" />}
-            {isSelected && <Badge label="Active" color="#059669" />}
-          </View>
-          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 3 }}>
-            <Text style={styles.modelMeta}>{model.speedLabel}</Text>
-            <Text style={styles.metaDot}>·</Text>
-            <QualityBar level={model.qualityLevel} />
-            <Text style={styles.qualityLabel}>{QUALITY_LABELS[model.qualityLevel]}</Text>
-          </View>
+  // Entire card is tappable when downloaded and not already selected
+  const canSelect = isDownloaded && !isSelected && !isDownloading;
+  const canDownload = !isDownloaded && !isDownloading;
+
+  const cardContent = (
+    <View style={[styles.card, isSelected && styles.cardSelected, isDownloading && styles.cardDownloading]}>
+      {/* Name row */}
+      <View style={styles.nameRow}>
+        <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          {isSelected
+            ? <Check size={14} color="#34D399" />
+            : <View style={[styles.radio, isDownloaded && styles.radioReady]} />}
+          <Text style={[styles.modelName, isSelected && styles.modelNameActive]}>{model.key}</Text>
+          {model.isDefault && <Pill label="Default" bg="rgba(109,40,217,0.25)" color="#A78BFA" />}
+          {isSelected && <Pill label="Active" bg="rgba(52,211,153,0.15)" color="#34D399" />}
+          {isDownloaded && !isSelected && <Pill label="Downloaded" bg="rgba(52,211,153,0.12)" color="#34D399" />}
         </View>
-        <View style={styles.sizeTag}>
-          <Text style={styles.sizeText}>{model.sizeLabel}</Text>
-        </View>
+        <Text style={styles.sizeText}>{model.sizeLabel}</Text>
+      </View>
+
+      {/* Quality + speed row */}
+      <View style={styles.metaRow}>
+        <QualityBar level={model.qualityLevel} />
+        <Text style={styles.metaText}>{QUALITY_LABELS[model.qualityLevel]}</Text>
+        <Text style={styles.metaDot}>·</Text>
+        <Text style={styles.metaText}>{model.speedLabel}</Text>
       </View>
 
       {/* Description */}
       <Text style={styles.description}>{model.description}</Text>
 
-      {/* Download progress */}
+      {/* Download progress bar */}
       {isDownloading && (
-        <View style={{ marginTop: 8, gap: 4 }}>
+        <View style={{ marginTop: 10, gap: 4 }}>
           <View style={styles.progressBg}>
             <View style={[styles.progressFill, { width: `${progress}%` as any }]} />
           </View>
@@ -170,51 +190,50 @@ function ModelCard({ model, isSelected, isDownloaded, downloadState, onSelect, o
         </View>
       )}
 
-      {/* Action button */}
-      {!isDownloading && (
-        <View style={styles.cardAction}>
-          {isSelected ? (
-            <View style={styles.activeBtn}>
-              <Check size={11} color="#34D399" />
-              <Text style={styles.activeBtnText}>Currently Active</Text>
-            </View>
-          ) : isDownloaded ? (
-            <TouchableOpacity onPress={onSelect} style={styles.useBtn}>
-              <Text style={styles.useBtnText}>Use This Model</Text>
-              <ChevronRight size={12} color={C.violet} />
-            </TouchableOpacity>
-          ) : (
-            <TouchableOpacity onPress={onDownload} style={styles.downloadBtn}>
-              <Download size={11} color={C.textSecondary} />
-              <Text style={styles.downloadBtnText}>Download · {model.sizeLabel}</Text>
-            </TouchableOpacity>
-          )}
+      {/* Download button (only for not-downloaded models) */}
+      {canDownload && (
+        <View style={styles.downloadRow}>
+          <Download size={11} color={C.textSecondary} />
+          <Text style={styles.downloadText}>Tap to download · {model.sizeLabel}</Text>
         </View>
       )}
     </View>
   );
+
+  if (canSelect) {
+    return (
+      <TouchableOpacity onPress={onSelect} activeOpacity={0.75}>
+        {cardContent}
+      </TouchableOpacity>
+    );
+  }
+
+  if (canDownload) {
+    return (
+      <TouchableOpacity onPress={onDownload} activeOpacity={0.75}>
+        {cardContent}
+      </TouchableOpacity>
+    );
+  }
+
+  return cardContent;
 }
 
-function Badge({ label, color }: { label: string; color: string }) {
+function Pill({ label, bg, color }: { label: string; bg: string; color: string }) {
   return (
-    <View style={[styles.badge, { backgroundColor: color + '28', borderColor: color + '55' }]}>
-      <Text style={[styles.badgeText, { color }]}>{label}</Text>
+    <View style={[styles.pill, { backgroundColor: bg }]}>
+      <Text style={[styles.pillText, { color }]}>{label}</Text>
     </View>
   );
 }
 
 function QualityBar({ level }: { level: 1 | 2 | 3 | 4 }) {
   return (
-    <View style={{ flexDirection: 'row', gap: 2 }}>
+    <View style={{ flexDirection: 'row', gap: 3 }}>
       {[1, 2, 3, 4].map(i => (
         <View
           key={i}
-          style={{
-            width: 10,
-            height: 4,
-            borderRadius: 2,
-            backgroundColor: i <= level ? C.violet : 'rgba(167,139,250,0.2)',
-          }}
+          style={{ width: 12, height: 4, borderRadius: 2, backgroundColor: i <= level ? C.violet : 'rgba(167,139,250,0.2)' }}
         />
       ))}
     </View>
@@ -225,10 +244,7 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     justifyContent: 'flex-end',
-    backgroundColor: 'rgba(0,0,0,0.65)',
-  },
-  dismissArea: {
-    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.6)',
   },
   sheet: {
     backgroundColor: '#120830',
@@ -236,7 +252,7 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
     height: '86%',
     borderTopWidth: 1,
-    borderColor: 'rgba(139,92,246,0.2)',
+    borderColor: 'rgba(139,92,246,0.25)',
   },
   handle: {
     width: 36,
@@ -278,17 +294,16 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     paddingHorizontal: S.lg,
-    paddingTop: 14,
+    paddingTop: 16,
     paddingBottom: 6,
   },
   sectionTitle: {
-    fontSize: 11,
+    fontSize: 10,
     fontWeight: '700',
     color: C.violet,
-    letterSpacing: 0.5,
-    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
-  sectionSubtitle: {
+  sectionNote: {
     fontSize: 9.5,
     color: C.textSecondary,
     marginTop: 1,
@@ -297,60 +312,65 @@ const styles = StyleSheet.create({
     marginHorizontal: S.md,
     marginBottom: S.sm,
     padding: S.md,
-    backgroundColor: 'rgba(255,255,255,0.045)',
+    backgroundColor: 'rgba(255,255,255,0.04)',
     borderRadius: R.el,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: 'rgba(255,255,255,0.07)',
   },
   cardSelected: {
-    backgroundColor: 'rgba(109,40,217,0.15)',
-    borderColor: 'rgba(139,92,246,0.4)',
+    backgroundColor: 'rgba(109,40,217,0.18)',
+    borderColor: 'rgba(139,92,246,0.45)',
   },
-  cardTop: {
+  cardDownloading: {
+    borderColor: 'rgba(167,139,250,0.3)',
+  },
+  nameRow: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
     gap: S.sm,
-    marginBottom: S.xs,
+    marginBottom: 6,
+  },
+  radio: {
+    width: 14,
+    height: 14,
+    borderRadius: 7,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.25)',
+  },
+  radioReady: {
+    borderColor: '#34D399',
   },
   modelName: {
-    fontSize: 13,
+    fontSize: 14,
     fontWeight: '700',
     color: C.textPrimary,
-    fontVariant: ['tabular-nums'],
   },
-  modelNameSelected: {
-    color: C.violet,
-  },
-  modelMeta: {
-    fontSize: 9.5,
-    color: C.textSecondary,
-  },
-  metaDot: {
-    fontSize: 9.5,
-    color: C.textSecondary,
-  },
-  qualityLabel: {
-    fontSize: 9.5,
-    color: C.textSecondary,
-  },
-  sizeTag: {
-    backgroundColor: 'rgba(255,255,255,0.06)',
-    borderRadius: 6,
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+  modelNameActive: {
+    color: '#34D399',
   },
   sizeText: {
-    fontSize: 9,
+    fontSize: 11,
     fontWeight: '600',
     color: C.textSecondary,
   },
-  description: {
+  metaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 6,
+  },
+  metaText: {
     fontSize: 10,
     color: C.textSecondary,
-    lineHeight: 14,
-    marginBottom: 2,
+  },
+  metaDot: {
+    fontSize: 10,
+    color: 'rgba(255,255,255,0.2)',
+  },
+  description: {
+    fontSize: 11,
+    color: C.textSecondary,
+    lineHeight: 15,
   },
   progressBg: {
     height: 3,
@@ -364,69 +384,27 @@ const styles = StyleSheet.create({
     borderRadius: 2,
   },
   progressText: {
-    fontSize: 9,
+    fontSize: 10,
     color: C.textSecondary,
   },
-  cardAction: {
-    alignItems: 'flex-end',
+  downloadRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
     marginTop: 8,
+    opacity: 0.7,
   },
-  activeBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(52,211,153,0.12)',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: 'rgba(52,211,153,0.3)',
-  },
-  activeBtnText: {
+  downloadText: {
     fontSize: 10,
-    fontWeight: '600',
-    color: '#34D399',
-  },
-  useBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: C.chipBg,
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: C.chipBorder,
-  },
-  useBtnText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: C.violet,
-  },
-  downloadBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    backgroundColor: 'rgba(255,255,255,0.05)',
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
-  },
-  downloadBtnText: {
-    fontSize: 10,
-    fontWeight: '500',
     color: C.textSecondary,
   },
-  badge: {
+  pill: {
     borderRadius: 5,
     paddingHorizontal: 6,
     paddingVertical: 2,
-    borderWidth: 1,
   },
-  badgeText: {
-    fontSize: 8.5,
+  pillText: {
+    fontSize: 9,
     fontWeight: '700',
   },
 });
