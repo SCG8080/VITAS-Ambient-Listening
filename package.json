@@ -13,11 +13,13 @@
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
     "@react-native-community/slider": "^5.0.1",
+    "audio-converter": "file:./modules/audio-converter",
     "expo": "~54.0.33",
     "expo-av": "~16.0.8",
     "expo-blur": "~15.0.8",
     "expo-constants": "~18.0.13",
     "expo-file-system": "~19.0.22",
+    "expo-keep-awake": "~15.0.8",
     "expo-linear-gradient": "~15.0.8",
     "expo-linking": "~8.0.12",
     "expo-router": "~6.0.23",
@@ -33,8 +35,7 @@
     "react-native-worklets": "^0.6.0",
     "tailwindcss": "^3.4.19",
     "whisper.rn": "^0.6.0",
-    "zustand": "^5.0.13",
-    "audio-converter": "file:./modules/audio-converter"
+    "zustand": "^5.0.13"
   },
   "devDependencies": {
     "@types/react": "~19.1.0",

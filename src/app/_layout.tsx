@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
+import { useKeepAwake } from 'expo-keep-awake';
 import { useAppInterruption } from '../application/services/AppInterruptionService';
 import { useCallDetection } from '../application/services/useCallDetection';
 import { recordingSessionService } from '../application/services/RecordingSessionService';
@@ -8,6 +9,7 @@ import { SplashOverlay } from '../presentation/components/SplashOverlay';
 import '../global.css';
 
 export default function RootLayout() {
+  useKeepAwake();
   useAppInterruption();
   useCallDetection();
 
