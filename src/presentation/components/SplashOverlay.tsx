@@ -83,7 +83,7 @@ export function SplashOverlay({ onDone }: Props) {
         entering={FadeIn.delay(600).duration(600)}
         style={styles.bottomLabel}
       >
-        <Text style={styles.bottomText}>VITAS Health</Text>
+        <Text style={styles.bottomText}>VITAS Healthcare</Text>
       </Animated.View>
     </Animated.View>
   );

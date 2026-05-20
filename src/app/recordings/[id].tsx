@@ -10,12 +10,12 @@ import { ScreenBackground } from '../../presentation/components/ScreenBackground
 import { GlassCard } from '../../presentation/components/GlassCard';
 import { TimelineSegmentCard, TimelineDivider } from '../../presentation/components/TimelineSegmentCard';
 import { UploadMockModal } from '../../presentation/components/UploadMockModal';
+import { TranscriptionSection } from '../../presentation/components/TranscriptionSection';
 import { useRecordingStore } from '../../store/recordingStore';
 import { recordingSessionService } from '../../application/services/RecordingSessionService';
 import { formatDurationMs } from '../../utils/duration';
 import { formatDateTime } from '../../utils/dateTime';
 import { C, FS, G, R, S } from '../../presentation/theme';
-import { transcriptionService } from '../../application/services/TranscriptionService';
 
 export default function RecordingDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -158,56 +158,10 @@ export default function RecordingDetailScreen() {
         </GlassCard>
 
         {/* Transcription UI */}
-        <GlassCard padding={S.lg}>
-          <Text style={{ fontSize: FS.h3, fontWeight: '700', color: C.textPrimary, marginBottom: 8 }}>Transcription</Text>
-          
-          {(!session.transcription || session.transcription.status === 'not_started' || session.transcription.status === 'failed' || session.transcription.status === 'cancelled') && (
-            <View style={{ gap: 8 }}>
-              <TouchableOpacity
-                onPress={() => transcriptionService.transcribe(session.id)}
-                activeOpacity={0.8}
-                style={{ backgroundColor: C.chipBg, padding: 12, borderRadius: R.button, alignItems: 'center', borderWidth: 1, borderColor: C.chipBorder }}
-              >
-                <Text style={{ color: C.textAccent, fontWeight: '600' }}>
-                  {session.transcription?.status === 'failed' ? 'Retry Transcription' : 'Transcribe'}
-                </Text>
-              </TouchableOpacity>
-              {session.transcription?.status === 'failed' && !!session.transcription.errorMessage && (
-                <Text style={{ color: '#ff4d4d', fontSize: FS.small, textAlign: 'center', marginTop: 4 }}>
-                  Error: {session.transcription.errorMessage}
-                </Text>
-              )}
-            </View>
-          )}
-
-          {(session.transcription?.status === 'in_progress' || session.transcription?.status === 'downloading_model') && (
-            <View style={{ gap: 8 }}>
-              <Text style={{ color: C.textSecondary, fontSize: FS.small }}>
-                {session.transcription.status === 'downloading_model'
-                  ? `Downloading AI model (first time only)... ${Math.round(session.transcription.progress || 0)}%`
-                  : session.transcription.text === 'Converting audio format...'
-                    ? 'Converting audio to compatible format...'
-                    : `Transcribing... ${Math.round(session.transcription.progress || 0)}%`}
-              </Text>
-              <View style={{ height: 4, backgroundColor: C.chipBg, borderRadius: 2, overflow: 'hidden' }}>
-                <View style={{ width: `${Math.round(session.transcription.progress || 0)}%`, height: '100%', backgroundColor: C.violet }} />
-              </View>
-              {!!session.transcription.text && session.transcription.text !== 'Converting audio format...' && (
-                <Text style={{ color: C.textPrimary, fontSize: FS.body, marginTop: 8 }} numberOfLines={2}>
-                  {session.transcription.text}
-                </Text>
-              )}
-            </View>
-          )}
-
-          {session.transcription?.status === 'completed' && (
-            <View>
-              <Text style={{ color: C.textPrimary, fontSize: FS.body, lineHeight: 22 }}>
-                {session.transcription.text || 'No speech detected.'}
-              </Text>
-            </View>
-          )}
-        </GlassCard>
+        <TranscriptionSection
+          sessionId={session.id}
+          transcription={session.transcription}
+        />
 
         {/* Upload CTA */}
         <TouchableOpacity
