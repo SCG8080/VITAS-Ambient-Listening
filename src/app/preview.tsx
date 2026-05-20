@@ -76,7 +76,6 @@ export default function PreviewScreen() {
       <ScreenBackground variant="preview" />
 
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingTop: insets.top + 8, paddingHorizontal: S.md, paddingBottom: insets.bottom + 80, gap: S.sm }}
       >

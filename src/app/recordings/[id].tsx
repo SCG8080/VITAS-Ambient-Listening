@@ -83,7 +83,6 @@ export default function RecordingDetailScreen() {
       <ScreenBackground variant="detail" />
 
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingTop: insets.top + 8, paddingHorizontal: S.md, paddingBottom: insets.bottom + 24, gap: S.sm }}
       >

@@ -90,7 +90,6 @@ export default function RecordingsListScreen() {
           data={filtered}
           keyExtractor={item => item.id}
           showsVerticalScrollIndicator={false}
-          contentInsetAdjustmentBehavior="automatic"
           contentContainerStyle={{ paddingHorizontal: S.md, paddingBottom: insets.bottom + 24, gap: S.xs }}
           renderItem={({ item }) => (
             <RecordingListItem session={item} onPress={() => router.push(`/recordings/${item.id}`)} />

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, useWindowDimensions } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -19,6 +20,7 @@ interface Props {
 
 export function SplashOverlay({ onDone }: Props) {
   const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const opacity = useSharedValue(1);
   const logoScale = useSharedValue(0.88);
   const logoOpacity = useSharedValue(0);
@@ -81,7 +83,7 @@ export function SplashOverlay({ onDone }: Props) {
       {/* Bottom version label */}
       <Animated.View
         entering={FadeIn.delay(600).duration(600)}
-        style={styles.bottomLabel}
+        style={[styles.bottomLabel, { bottom: 52 + insets.bottom }]}
       >
         <Text style={styles.bottomText}>VITAS Healthcare</Text>
       </Animated.View>
@@ -118,7 +120,6 @@ const styles = StyleSheet.create({
   },
   bottomLabel: {
     position: 'absolute',
-    bottom: 52,
   },
   bottomText: {
     fontSize: 9,

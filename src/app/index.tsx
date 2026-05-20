@@ -26,7 +26,6 @@ export default function HomeScreen() {
       <ScreenBackground variant="home" />
 
       <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingTop: insets.top + 8, paddingHorizontal: S.md, paddingBottom: insets.bottom + 24, gap: S.sm }}
       >
