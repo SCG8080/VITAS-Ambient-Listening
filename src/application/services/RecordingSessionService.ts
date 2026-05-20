@@ -134,6 +134,7 @@ class RecordingSessionService {
 
     const uri = await this.audioRecorder.stopRecording();
     this.stopTimer();
+    useRecordingStore.getState().setElapsedTimeMs(0);
 
     const now = new Date().toISOString();
     const nowMs = Date.now();
