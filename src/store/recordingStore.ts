@@ -18,6 +18,7 @@ interface RecordingState {
   // Saved Recordings State
   recordings: RecordingSession[];
   setRecordings: (recordings: RecordingSession[]) => void;
+  updateRecording: (id: string, updates: Partial<RecordingSession>) => void;
 }
 
 export const useRecordingStore = create<RecordingState>((set) => ({
@@ -59,4 +60,9 @@ export const useRecordingStore = create<RecordingState>((set) => ({
   
   recordings: [],
   setRecordings: (recordings) => set({ recordings }),
+  updateRecording: (id, updates) => set((state) => {
+    const recordings = state.recordings.map(r => r.id === id ? { ...r, ...updates } : r);
+    const currentSession = state.currentSession?.id === id ? { ...state.currentSession, ...updates } : state.currentSession;
+    return { recordings, currentSession };
+  }),
 }));

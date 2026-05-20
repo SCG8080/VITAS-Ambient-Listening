@@ -12,4 +12,11 @@ export interface RecordingSession {
   pauseCount: number;
   timelineSegments: RecordingTimelineSegment[];
   uploadStatus?: "not_uploaded" | "uploading" | "uploaded" | "failed";
+    transcription?: {
+    status: 'not_started' | 'downloading_model' | 'in_progress' | 'completed' | 'failed' | 'cancelled';
+    text?: string;
+    model?: 'tiny.en' | 'base.en';
+    progress?: number;
+    errorMessage?: string;
+  };
 }

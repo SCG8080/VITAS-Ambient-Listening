@@ -59,6 +59,11 @@ export function RecordingListItem({ session, onPress }: Props) {
             <Text style={{ fontSize: FS.small, fontWeight: '700', color: C.textAccent }}>
               {formatDurationMs(session.durationMs)}
             </Text>
+            {session.transcription?.status === 'completed' && (
+              <View style={{ backgroundColor: 'rgba(124, 58, 237, 0.14)', borderWidth: 1, borderColor: 'rgba(124, 58, 237, 0.3)', borderRadius: R.chip, paddingHorizontal: 7, paddingVertical: 2 }}>
+                <Text style={{ fontSize: 7.5, fontWeight: '700', color: '#A78BFA' }}>Transcribed</Text>
+              </View>
+            )}
             {isUploaded && (
               <View style={{ backgroundColor: C.greenBg, borderWidth: 1, borderColor: C.greenBorder, borderRadius: R.chip, paddingHorizontal: 7, paddingVertical: 2 }}>
                 <Text style={{ fontSize: 7.5, fontWeight: '700', color: '#34D399' }}>✓ Done</Text>
