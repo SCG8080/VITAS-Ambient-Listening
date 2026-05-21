@@ -1,9 +1,10 @@
 {
-  "platforms": ["android", "ios"],
+  "platforms": ["android", "apple"],
   "android": {
     "modules": ["expo.modules.audioconverter.AudioConverterModule"]
   },
-  "ios": {
+  "apple": {
+    "podspecPath": "audio-converter.podspec",
     "modules": ["AudioConverterModule"]
   }
 }

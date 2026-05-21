@@ -8,8 +8,7 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "build:apk": "npx expo prebuild -p android --clean && cd android && ./gradlew assembleRelease && cd .. && cp android/app/build/outputs/apk/release/app-release.apk vitas-ambient-recorder.apk",
-    "build:apk:win": "taskkill /F /IM java.exe /T 2>nul & if exist android\\app\\build rmdir /s /q android\\app\\build && npx expo prebuild -p android --clean && android\\gradlew.bat -p android assembleRelease && copy android\\app\\build\\outputs\\apk\\release\\app-release.apk vitas-ambient-recorder.apk",
-    "postinstall": "node scripts/ensure-local-modules.js"
+    "build:apk:win": "taskkill /F /IM java.exe /T 2>nul & if exist android\\app\\build rmdir /s /q android\\app\\build && npx expo prebuild -p android --clean && android\\gradlew.bat -p android assembleRelease && copy android\\app\\build\\outputs\\apk\\release\\app-release.apk vitas-ambient-recorder.apk"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",

@@ -29,7 +29,13 @@ class TranscriptionService {
     const model = this.getModelInfo(modelKey);
     const modelPath = `${FileSystem.documentDirectory}${model.fileName}`;
     const info = await FileSystem.getInfoAsync(modelPath);
-    if (info.exists) return modelPath;
+    
+    if (info.exists) {
+      if (info.size && info.size > 10000000) {
+        return modelPath;
+      }
+      await FileSystem.deleteAsync(modelPath, { idempotent: true });
+    }
 
     if (this.downloadingModels.has(modelKey)) {
       throw new Error('This model is already downloading. Please wait.');
@@ -59,7 +65,10 @@ class TranscriptionService {
     this.whisperContext = null;
     this.loadedModelKey = null;
     const modelPath = await this.downloadModel(modelKey, onDownloadProgress);
-    this.whisperContext = await initWhisper({ filePath: modelPath });
+    
+    const whisperModelPath = modelPath.replace(/^file:\/\//, '');
+    this.whisperContext = await initWhisper({ filePath: whisperModelPath });
+    
     this.loadedModelKey = modelKey;
     return this.whisperContext;
   }
@@ -95,7 +104,8 @@ class TranscriptionService {
       await updateState({ status: 'in_progress', progress: 0, text: '' });
       let transcribedText = '';
 
-      const { promise } = context.transcribe(wavPath, {
+      const whisperPath = wavPath.replace(/^file:\/\//, '');
+      const { promise } = context.transcribe(whisperPath, {
         language: 'en',
         maxLen: 1,
         tokenTimestamps: true,

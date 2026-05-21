@@ -50,6 +50,16 @@ export default function RecordingDetailScreen() {
 
   const handlePlay = async () => {
     if (!session.audioUri) { Alert.alert('Error', 'No audio file found.'); return; }
+
+    try {
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: false,
+        playsInSilentModeIOS: true,
+      });
+    } catch (e) {
+      console.warn('Failed to set audio mode for playback', e);
+    }
+
     if (isPlaying && sound) { await sound.pauseAsync(); setIsPlaying(false); return; }
     try {
       if (sound) { await sound.playAsync(); }

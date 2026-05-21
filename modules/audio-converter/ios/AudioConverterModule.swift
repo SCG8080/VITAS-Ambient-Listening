@@ -19,25 +19,20 @@ public class AudioConverterModule: Module {
     let inputFormat = inputFile.processingFormat
 
     // Target: 16 kHz, 16-bit, mono PCM (what whisper.rn expects)
-    let wavSettings: [String: Any] = [
-      AVFormatIDKey: kAudioFormatLinearPCM,
-      AVSampleRateKey: 16000.0,
-      AVNumberOfChannelsKey: 1,
-      AVLinearPCMBitDepthKey: 16,
-      AVLinearPCMIsBigEndianKey: false,
-      AVLinearPCMIsNonInterleaved: false
-    ]
-
-    guard let targetFormat = AVAudioFormat(settings: wavSettings) else {
+    guard let targetFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 16000.0, channels: 1, interleaved: true) else {
       throw NSError(domain: "AudioConverter", code: 1,
                     userInfo: [NSLocalizedDescriptionKey: "Failed to create 16 kHz mono PCM format"])
     }
 
-    let outputFile = try AVAudioFile(forWriting: outputURL, settings: wavSettings)
+    let outputFile = try AVAudioFile(forWriting: outputURL, settings: targetFormat.settings)
 
     guard let converter = AVAudioConverter(from: inputFormat, to: targetFormat) else {
       throw NSError(domain: "AudioConverter", code: 2,
                     userInfo: [NSLocalizedDescriptionKey: "Failed to create AVAudioConverter"])
+    }
+
+    guard inputFormat.sampleRate > 0 else {
+      throw NSError(domain: "AudioConverter", code: 4, userInfo: [NSLocalizedDescriptionKey: "Invalid input sample rate"])
     }
 
     let readFrameCount: AVAudioFrameCount = 8192
@@ -55,7 +50,7 @@ public class AudioConverterModule: Module {
     var convError: NSError?
 
     while true {
-      outBuf.frameLength = 0
+      outBuf.frameLength = outBuf.frameCapacity
 
       let status = converter.convert(to: outBuf, error: &convError) { _, inputStatus in
         guard !reachedEnd else {

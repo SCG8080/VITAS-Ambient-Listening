@@ -42,7 +42,6 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "./plugins/withAudioConverter",
       "expo-router",
       [
         "expo-av",
