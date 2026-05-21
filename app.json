@@ -18,7 +18,11 @@
       "backgroundColor": "#0D0621"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.sym.vitasambientrecorder",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -32,12 +36,13 @@
         "android.permission.MODIFY_AUDIO_SETTINGS",
         "android.permission.READ_PHONE_STATE"
       ],
-      "package": "com.anonymous.vitasambientrecorder"
+      "package": "com.sym.vitasambientrecorder"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
+      "./plugins/withAudioConverter",
       "expo-router",
       [
         "expo-av",
@@ -45,6 +50,19 @@
           "microphonePermission": "Allow VITAS Ambient Recorder to access your microphone."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "f053d988-e9ad-4acf-900e-726fa0a9549b"
+      }
+    },
+    "owner": "vitas-healthcare",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/f053d988-e9ad-4acf-900e-726fa0a9549b"
+    }
   }
 }

@@ -24,7 +24,6 @@ public class AudioConverterModule: Module {
       AVSampleRateKey: 16000.0,
       AVNumberOfChannelsKey: 1,
       AVLinearPCMBitDepthKey: 16,
-      AVLinearPCMIsFloat: false,
       AVLinearPCMIsBigEndianKey: false,
       AVLinearPCMIsNonInterleaved: false
     ]

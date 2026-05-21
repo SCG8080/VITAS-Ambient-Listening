@@ -1,0 +1,47 @@
+name: EAS Build
+
+on:
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: "Platform to build"
+        required: true
+        type: choice
+        options:
+          - android
+          - ios
+
+jobs:
+  build:
+    name: EAS Build (${{ inputs.platform }})
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build Android — Internal Distribution
+        if: ${{ inputs.platform == 'android' }}
+        run: eas build --platform android --profile preview --non-interactive
+
+      - name: Build iOS
+        if: ${{ inputs.platform == 'ios' }}
+        run: eas build --platform ios --profile preview --non-interactive
+
+      - name: Submit iOS to TestFlight
+        if: ${{ inputs.platform == 'ios' }}
+        run: eas submit --platform ios --profile preview --latest --non-interactive

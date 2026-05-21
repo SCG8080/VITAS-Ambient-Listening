@@ -1,0 +1,69 @@
+{
+  "cli": {
+    "version": ">= 16.17.4",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "development": {
+      "developmentClient": false,
+      "autoIncrement": true,
+      "distribution": "internal",
+      "environment": "development",
+      "channel": "development",
+      "env": {
+        "APP_ENV": "DEV"
+      },
+      "android": {
+        "distribution": "internal"
+      },
+      "ios": {
+        "distribution": "store",
+        "image": "latest"
+      }
+    },
+    "preview": {
+      "developmentClient": false,
+      "autoIncrement": true,
+      "environment": "preview",
+      "channel": "preview",
+      "env": {
+        "APP_ENV": "QA"
+      },
+      "android": {
+        "distribution": "internal"
+      },
+      "ios": {
+        "distribution": "store",
+        "simulator": false,
+        "image": "latest"
+      }
+    },
+    "production": {
+      "developmentClient": false,
+      "autoIncrement": true,
+      "environment": "production",
+      "channel": "production",
+      "env": {
+        "APP_ENV": "PROD"
+      },
+      "android": {
+        "distribution": "store"
+      },
+      "ios": {
+        "distribution": "store",
+        "simulator": false,
+        "image": "latest"
+      }
+    }
+  },
+  "submit": {
+    "preview": {
+      "ios": {
+        "ascAppId": "6767665103"
+      },
+      "android": {
+        "track": "internal"
+      }
+    }
+  }
+}
