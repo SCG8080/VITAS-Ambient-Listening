@@ -18,13 +18,23 @@ public class AudioConverterModule: Module {
     let inputFile = try AVAudioFile(forReading: inputURL)
     let inputFormat = inputFile.processingFormat
 
-    // Target: 16 kHz, 16-bit, mono PCM (what whisper.rn expects)
-    guard let targetFormat = AVAudioFormat(commonFormat: .pcmFormatInt16, sampleRate: 16000.0, channels: 1, interleaved: true) else {
+    // Use Float32 for the processing buffer — AVAudioFile.processingFormat is always Float32,
+    // so the buffer passed to write() must be Float32. AVAudioFile converts to Int16 on disk.
+    guard let targetFormat = AVAudioFormat(commonFormat: .pcmFormatFloat32, sampleRate: 16000.0, channels: 1, interleaved: false) else {
       throw NSError(domain: "AudioConverter", code: 1,
                     userInfo: [NSLocalizedDescriptionKey: "Failed to create 16 kHz mono PCM format"])
     }
 
-    let outputFile = try AVAudioFile(forWriting: outputURL, settings: targetFormat.settings)
+    // Write 16-bit PCM to disk (what whisper.rn expects); AVAudioFile handles Float32→Int16 encoding.
+    let wavSettings: [String: Any] = [
+      AVFormatIDKey: kAudioFormatLinearPCM,
+      AVSampleRateKey: 16000.0,
+      AVNumberOfChannelsKey: 1,
+      AVLinearPCMBitDepthKey: 16,
+      AVLinearPCMIsBigEndianKey: false,
+      AVLinearPCMIsNonInterleaved: false
+    ]
+    let outputFile = try AVAudioFile(forWriting: outputURL, settings: wavSettings)
 
     guard let converter = AVAudioConverter(from: inputFormat, to: targetFormat) else {
       throw NSError(domain: "AudioConverter", code: 2,
